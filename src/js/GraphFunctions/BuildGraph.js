@@ -2,6 +2,8 @@
 var highlightedNodes = [];
 var highlightedEdges = [];
 
+const SCALE = 15
+
 function createGraphElements(file_data){
     let num_nodes = file_data.node_ids.length;
     let node_list = []
@@ -12,9 +14,9 @@ function createGraphElements(file_data){
         node_list.push({
             name: node_name,
             id: id - 1,
-            fx: coordinates[0] * 15,
-            fy: coordinates[1] * 15,
-            fz: coordinates[2] * 15,
+            fx: coordinates[0] * SCALE,
+            fy: coordinates[1] * SCALE,
+            fz: coordinates[2] * SCALE,
             color: '#40C4FF'
         })
     }
