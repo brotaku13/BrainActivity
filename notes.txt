@@ -1,0 +1,34 @@
+There are 6 files in there, 3 for OCD and 3 for CON. The one with the word 'coords' in it, is the coordinates of the part of the brain in 
+3D space. The coords are the same for OCD and CON files. There's also a file with group_names, that is the scientific name for the part of 
+the brain located on each line from the coordinates file (in the same order). There's a file with abbrev_name, that is the node used in the 
+graph in place of the scientific name. Note that the node names are 1-based. The adjacency matrices for CON and OCD are the .txt files one 
+folder up. That will give the edges that we would want to see in the visualization too. If you want edge-list files for any reason, that is 
+con_17_el and con_19_el in the same folder as the .txt files.
+
+
+File Descriptors
+    Brain Part Names:
+        OCD_region_names_group_mean_1x200
+        CON_region_names_group_mean_1x200
+
+    Brain Abreviated:
+        OCD_region_names_abbrev_group_mean_1x200
+        CON_region_names_abbrev_group_mean_1x200
+
+    Coordinates:
+        OCD_region_centers_mm_coords_group_mean_3x200
+        CON_region_centers_mm_coords_group_mean_3x200
+
+    Edge Lists:
+        ocd_19_el
+        con_17_el
+    
+    Adjacency Matrix:
+        ocd_19_mean_mat.txt
+        con_19_mean_mat.txt
+
+As for what we want to visualize for both CON And OCD:
+1) The coordinates of the brain parts, with a feature to see their names and node ID. 
+2) It would be nice if we can turn/spin/revolve/etc the 3D visualization and zoom in and out.
+3) We should also be able to see the edges between brain parts.
+4) It would be nice to click on a few brain parts (ie) and see the edges shared by only those nodes  (basically a graphlet). 

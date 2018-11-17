@@ -1,0 +1,63 @@
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.min.js"></script>
+    <script src="https://unpkg.com/3d-force-graph"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!--Materialize CSS Libraries-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+
+
+    <script src="./src/js/LoadData/LoadData.js"></script>
+    <script src="./src/js/GraphFunctions/BuildGraph.js"></script>
+    <script src="index.js"></script>
+
+</head>
+
+<body>
+    <div class="row app-container" id="app-container">
+        <div class="col s10">
+            <div id="3d-graph"></div>
+        </div>
+        <div class="col s2">
+            <ul class="collection with-header">
+                <li class="collection-header">
+                    <h4>Data Loading</h4>
+                </li>
+                <li class="collection-item">
+                    <input type="file" class="file-input" id="getEdgeList" name="edge_list" style="visibility: hidden; width: 1px; height: 1px" />
+                    <div>Edge List<a href="#!" onclick="document.getElementById('getEdgeList').click(); return false"
+                            class="secondary-content"><i class="material-icons" id="edge_list_icon">arrow_upward</i></a></div>
+                </li>
+
+                <li class="collection-item">
+                    <input type="file" id="getCoordinates" class="file-input" name="coordinates" style="visibility: hidden; width: 1px; height: 1px" />
+                    <div>Coordinates<a href="#!" onclick="document.getElementById('getCoordinates').click(); return false"
+                            class="secondary-content"><i class="material-icons" id="coordinates_icon">arrow_upward</i></a></div>
+                </li>
+
+                <li class="collection-item">
+                    <input type="file" id="getNodeNames" class="file-input" name="node_names" style="visibility: hidden; width: 1px; height: 1px" />
+                    <div>Node Names<a href="#!" onclick="document.getElementById('getNodeNames').click(); return false"
+                            class="secondary-content"><i class="material-icons" id="node_names_icon">arrow_upward</i></a></div>
+                </li>
+
+                <li class="collection-item">
+                    <input type="file" id="getNodeIds" class="file-input" name="node_ids" style="visibility: hidden; width: 1px; height: 1px" />
+                    <div>Node Ids<a href="#!" onclick="document.getElementById('getNodeIds').click(); return false"
+                            class="secondary-content"><i class="material-icons" id="node_ids_icon">arrow_upward</i></a></div>
+                </li>
+            </ul>
+
+            <button class="btn waves-effect waves-light light-blue darken-2" id="create-graph">Create Graph
+                <i class="material-icons right">timeline</i>
+            </button>
+        </div>
+    </div>
+</body>
