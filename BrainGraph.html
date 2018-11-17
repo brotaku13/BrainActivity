@@ -37,6 +37,12 @@
                 </li>
 
                 <li class="collection-item">
+                    <input type="file" id="getMatrix" class="file-input" name="weight_matrix" style="visibility: hidden; width: 1px; height: 1px" />
+                    <div>Weight Matrix<a href="#!" onclick="document.getElementById('getMatrix').click(); return false"
+                            class="secondary-content"><i class="material-icons" id="weight_matrix_icon">arrow_upward</i></a></div>
+                </li>
+
+                <li class="collection-item">
                     <input type="file" id="getCoordinates" class="file-input" name="coordinates" style="visibility: hidden; width: 1px; height: 1px" />
                     <div>Coordinates<a href="#!" onclick="document.getElementById('getCoordinates').click(); return false"
                             class="secondary-content"><i class="material-icons" id="coordinates_icon">arrow_upward</i></a></div>
@@ -53,11 +59,33 @@
                     <div>Node Ids<a href="#!" onclick="document.getElementById('getNodeIds').click(); return false"
                             class="secondary-content"><i class="material-icons" id="node_ids_icon">arrow_upward</i></a></div>
                 </li>
+                <li class="collection-item">
+                    <input type="file" id="getBundle" class="file-input" name="bundle" style="visibility: hidden; width: 1px; height: 1px"
+                        multiple />
+                    <div>Bundle<a href="#!" onclick="document.getElementById('getBundle').click(); return false" class="secondary-content"><i
+                                class="material-icons" id="bundle_icon">arrow_upward</i></a></div>
+                </li>
             </ul>
 
-            <button class="btn waves-effect waves-light light-blue darken-2" id="create-graph">Create Graph
-                <i class="material-icons right">timeline</i>
-            </button>
+            <div class="row">
+
+                <button class="btn waves-effect waves-light light-blue darken-2" id="create-graph">Create Graph
+                    <i class="material-icons right">timeline</i>
+                </button>
+            </div>
+            <div class="row">
+                <label>
+                    <input type="checkbox" class="filled-in" id="toggle-particles" />
+                    <span>Toggle Particles</span>
+                </label>
+            </div>
+            <div class="row">
+                <label>
+                    <input type="checkbox" class="filled-in" id="toggle-edge-weights" />
+                    <span>Toggle Edge Weights</span>
+                </label>
+            </div>
+
         </div>
     </div>
 </body>
