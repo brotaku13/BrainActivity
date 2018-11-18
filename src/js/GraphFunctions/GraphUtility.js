@@ -45,3 +45,16 @@ function deselectAll(){
         }
     })
 }
+
+function focusNode(nodeId){
+    let cyNodes = cy.nodes(`#${nodeId}`);
+    let node = cyNodes[0].data().nodeLink;
+    const distance = 100;
+    const distRatio = 1 + distance / Math.hypot(node.fx, node.fy, node.fz);
+
+    Graph.cameraPosition(
+        {x: node.fx * distRatio, y: node.fy * distRatio, z: node.fz * distRatio}, //new position
+        node, 
+        3000 // transition time
+    )
+}

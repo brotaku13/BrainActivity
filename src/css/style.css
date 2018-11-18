@@ -22,6 +22,14 @@ body {
     height: 100vh;
     width: 100%;
 }
+.graph-container {
+    height: 100%;
+    padding-left: 0px !important;
+}
+
+.dropdown-wrapper {
+    padding-left: 20px;
+}
 
 .dimensions-selector {
     left: 0;

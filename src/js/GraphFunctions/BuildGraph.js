@@ -159,4 +159,7 @@ function linkToCytoscape(){
     })
     cy.add(cyNodes);
     cy.add(cyEdges);
+
+    //set pick list values
+    generateNodeList();
 }

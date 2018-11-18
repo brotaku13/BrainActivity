@@ -5,14 +5,18 @@ var cy = undefined;
 var Graph = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
+    //init select field
+    
+
+
     //get hight/width of container
-    let container = document.getElementById('app-container')
+    let container = document.getElementById('graph-container')
     let dim = container.getBoundingClientRect()
 
     //initialize graph window and set width/height
     Graph = ForceGraph3D();
     Graph(document.getElementById('3d-graph'))
-        .width(dim.width * (10 / 12))
+        .width(dim.width)
         .height(dim.height)
 
     //init cytoscape
@@ -65,5 +69,11 @@ document.addEventListener("DOMContentLoaded", function () {
         EDGE_WEIGHT = !EDGE_WEIGHT;
         updateGraph(Graph) //this is required to update the node graph geometries. without this line, the particles will continue to move
         console.log('Value of edge_weight is ', EDGE_WEIGHT);
+    })
+
+    document.getElementById('nodeList').addEventListener('change', (event)=>{
+        let nodeId = event.target.value;
+        console.log('Chose node ID: ', nodeId);
+        focusNode(nodeId);
     })
 })

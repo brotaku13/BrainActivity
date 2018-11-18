@@ -18,6 +18,7 @@
     <script src="./src/js/LoadData/LoadData.js"></script>
     <script src="./src/js/GraphFunctions/BuildGraph.js"></script>
     <script src="./src/js/GraphFunctions/GraphUtility.js"></script>
+    <script src="./src/js/HTMLGen/HTMLFunctions.js"></script>
     <script src="index.js"></script>
 
 </head>
@@ -25,10 +26,10 @@
 <body>
     <div class="cy-container" id="cy"></div>
     <div class="row app-container" id="app-container">
-        <div class="col s10">
+        <div class="col s10 graph-container" id="graph-container">
             <div id="3d-graph"></div>
         </div>
-        <div class="col s2">
+        <div class="col s2 sidebar-container">
             <ul class="collection with-header">
                 <li class="collection-header">
                     <h4>Data Loading</h4>
@@ -88,7 +89,12 @@
                     <span>Toggle Edge Weights</span>
                 </label>
             </div>
-
+            <div class="input-field row dropdown-wrapper">
+                <select id="nodeList" class="">
+                    <option value="" disabled selected>Choose your option</option>
+                </select>
+                <label class="dropdown-wrapper">Focus Node</label>
+            </div>
         </div>
     </div>
 </body>
