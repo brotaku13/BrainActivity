@@ -1,6 +1,8 @@
 
 //global variable for the data loaded in from the files
 var file_data = {};
+var cy = undefined;
+var Graph = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
     //get hight/width of container
@@ -8,10 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
     let dim = container.getBoundingClientRect()
 
     //initialize graph window and set width/height
-    const Graph = ForceGraph3D();
+    Graph = ForceGraph3D();
     Graph(document.getElementById('3d-graph'))
         .width(dim.width * (10 / 12))
         .height(dim.height)
+
+    //init cytoscape
+    cy = cytoscape({
+        container: document.getElementById('cy')
+    });
 
     //init file-input buttons
     let fileInputs = document.getElementsByClassName('file-input');

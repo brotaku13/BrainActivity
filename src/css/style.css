@@ -4,6 +4,12 @@ body {
     margin: 0;
 }
 
+.cy-container {
+    height: 0px;
+    width: 0px;
+    visibility: hidden;
+}
+
 .dimensions-selector, .graph-data {
     position: relative;
     display: block;

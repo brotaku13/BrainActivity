@@ -1,6 +1,7 @@
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.min.js"></script>
     <script src="https://unpkg.com/3d-force-graph"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.20/cytoscape.min.js"></script>
 
     <link rel="stylesheet" href="./src/css/style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -16,11 +17,13 @@
 
     <script src="./src/js/LoadData/LoadData.js"></script>
     <script src="./src/js/GraphFunctions/BuildGraph.js"></script>
+    <script src="./src/js/GraphFunctions/GraphUtility.js"></script>
     <script src="index.js"></script>
 
 </head>
 
 <body>
+    <div class="cy-container" id="cy"></div>
     <div class="row app-container" id="app-container">
         <div class="col s10">
             <div id="3d-graph"></div>
