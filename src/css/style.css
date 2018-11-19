@@ -8,6 +8,7 @@ body {
     height: 0px;
     width: 0px;
     visibility: hidden;
+    
 }
 
 .dimensions-selector, .graph-data {
@@ -29,6 +30,11 @@ body {
 
 .dropdown-wrapper {
     padding-left: 20px;
+}
+
+.scale-slider {
+    margin: 0 0 0 0;
+    padding: 0 10px 0 10px;
 }
 
 .dimensions-selector {

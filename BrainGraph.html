@@ -2,6 +2,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.min.js"></script>
     <script src="https://unpkg.com/3d-force-graph"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.20/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.4.0/chroma.min.js"></script>
 
     <link rel="stylesheet" href="./src/css/style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -17,8 +18,9 @@
 
     <script src="./src/js/LoadData/LoadData.js"></script>
     <script src="./src/js/GraphFunctions/BuildGraph.js"></script>
-    <script src="./src/js/GraphFunctions/GraphUtility.js"></script>
     <script src="./src/js/HTMLGen/HTMLFunctions.js"></script>
+    <script src="./src/js/GraphFunctions/GraphUtility.js"></script>
+
     <script src="index.js"></script>
 
 </head>
@@ -32,7 +34,7 @@
         <div class="col s2 sidebar-container">
             <ul class="collection with-header">
                 <li class="collection-header">
-                    <h4>Data Loading</h4>
+                    <h5>Load Individual</h5>
                 </li>
                 <li class="collection-item">
                     <input type="file" class="file-input" id="getEdgeList" name="edge_list" style="visibility: hidden; width: 1px; height: 1px" />
@@ -63,6 +65,9 @@
                     <div>Node Ids<a href="#!" onclick="document.getElementById('getNodeIds').click(); return false"
                             class="secondary-content"><i class="material-icons" id="node_ids_icon">arrow_upward</i></a></div>
                 </li>
+                <li class="collection-header">
+                    <h5>Load All</h5>
+                </li>
                 <li class="collection-item">
                     <input type="file" id="getBundle" class="file-input" name="bundle" style="visibility: hidden; width: 1px; height: 1px"
                         multiple />
@@ -83,17 +88,48 @@
                     <span>Toggle Particles</span>
                 </label>
             </div>
+
             <div class="row">
                 <label>
                     <input type="checkbox" class="filled-in" id="toggle-edge-weights" />
                     <span>Toggle Edge Weights</span>
                 </label>
             </div>
+            <div class="row">
+                    <span>Scale Edge Size</span>
+                <p class="range-field scale-slider">
+                    <input type="range" id="edge-size" min="1" max="10" value="1"/>
+                </p>
+            </div>
+            <div class="row">
+                <span>Scale Node Size</span>
+                <p class="range-field scale-slider">
+                    <input type="range" id="node-size" min="1" max="10" value="1"/>
+                </p>
+            </div>
+
+            <div class="input-field row dropdown-wrapper">
+                <select id="color-by-dropdown" class="">
+                    <option value="no_color" selected>No Color</option>
+                    <option value="degree">Degree</option>
+                    <option value="strength">Strength</option>
+                    <option value="degree_centrality">Degree Centrality</option>
+                    <option value="betweenness_centrality">Betweenness Centrality</option>
+                </select>
+                <label class="dropdown-wrapper">Color Nodes By</label>
+            </div>
             <div class="input-field row dropdown-wrapper">
                 <select id="nodeList" class="">
-                    <option value="" disabled selected>Choose your option</option>
+                    <option value="" disabled selected>Choose Node</option>
                 </select>
                 <label class="dropdown-wrapper">Focus Node</label>
+            </div>
+
+            <div class="row hide" id="color-scale">
+                <div class="col s2" id="scale-color-container">
+                </div>
+                <div class="col s10" id="scale-numbers">
+                </div>
             </div>
         </div>
     </div>

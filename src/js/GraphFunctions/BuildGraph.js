@@ -1,24 +1,35 @@
+//controls the spacing between coordinates. Scaled up to allow for a more 
+// spread out look while keeping the same ratio distances
+const SPACING_SCALE = 15;
 
-var highlightedNode = null;
-var highlightedEdges = [];
-
-const SPACING_SCALE = 15
-
+//colors of uncolored nodes. 
 const BASE_NODE_COLOR = 'rgb(64,196,255)';
 const BASE_EDGE_COLOR = 'rgb(255, 255, 255)';
 
-const NODE_HIGHLIGHT = 'rgb(255, 0, 0)';
-const EDGE_HIGHLIGHT = 'rgb(0, 255, 0)';
+//colors of nodes which have not been selected
+const NODE_FADE = 'rgba(207, 216, 220, 0.2)';
+const EDGE_FADE = 'rgba(207, 216, 220, 0.2)';
 
-const NODE_FADE = 'rgba(64, 196, 255, 0.4)';
-const EDGE_FADE = 'rgba(255, 255, 255, 0.4)';
+//scaling factor for edge and node size
+var EDGE_SCALE = 1;
+var NODE_SCALE = 1
 
+//Control wether particles and edge weights are shown
 var PARTICLES = false;
 var EDGE_WEIGHT = false;
 
+//managed which nodes are highlighted
+var highlightedNode = null;
+
+//manages whether cytoscape is linked or not. Cytoscape can only be linked after the graph has
+// been initialized, which does not happen until the the graphics engine starts. 
 var cytoscapeLinked = false;
 
-//creates the graph elements from the files included
+/**
+ * creates the graph elements from the data loaded in from the file. Requires
+ * Node Name, Node IDs, Edge Weight Matrix, Edge List, and node Coordinates
+ * @param {Object} file_data Data loaded in from file
+ */
 function createGraphElements(file_data){
     let num_nodes = file_data.node_ids.length;
     let node_list = []
@@ -34,7 +45,9 @@ function createGraphElements(file_data){
             fx: coordinates[0] * SPACING_SCALE,
             fy: coordinates[1] * SPACING_SCALE,
             fz: coordinates[2] * SPACING_SCALE,
-            color: '#40C4FF'
+            color: '#40C4FF',
+            selected: true,
+            scaledColor: {}
         })
     }
 
@@ -47,7 +60,8 @@ function createGraphElements(file_data){
             source: edge[0],
             target: edge[1],
             value: file_data.weight_matrix[edge[0]][edge[1]],
-            color: BASE_EDGE_COLOR
+            color: BASE_EDGE_COLOR,
+            selected: true
         })
     }
     return {
@@ -56,7 +70,11 @@ function createGraphElements(file_data){
     }
 }
 
-//builds the graph functions 
+/**
+ * creates the graph from the given graph elements
+ * @param {3D-Force-graph} Graph Graph object from the 3d-force-graph library
+ * @param {object} graph_elements Object containing all of the nodes and edges for the graph to be created
+ */
 function buildGraph(Graph, graph_elements){
     
     Graph(document.getElementById('3d-graph'))
@@ -65,14 +83,31 @@ function buildGraph(Graph, graph_elements){
 
     //node functions
     .nodeVal(()=>{
-        return 10
+        return 10 * NODE_SCALE;
     })
     .nodeLabel((node)=>{
-        // debugger;
-        return node.name
+        //node label is a composite of all of the calculations that have been made on the node
+        let name = `<div>${node.name}</div>`;
+        if(node.degree !== undefined){
+            name += `<div>degree: ${node.degree}</div>`;
+        }
+        if(node.strength !== undefined){
+            name += `<div>strength: ${node.strength}</div>`;
+        }
+        if(node.degreeCentrality !== undefined){
+            name += `<div>Weighted Degree Centrality: ${node.degreeCentrality}</div>`;
+        }
+        if(node.betweennessCentrality !== undefined){
+            name += `<div>Betweenness Centrality: ${node.betweennessCentrality}</div>`;
+        }
+        return name;
     })
     .nodeColor(node =>{
-        return node.color
+        if(node.selected){
+            return node.color            
+        } else {
+            return NODE_FADE;
+        }
     })
     .nodeResolution(30)
     .enableNodeDrag(false)
@@ -85,15 +120,20 @@ function buildGraph(Graph, graph_elements){
             deselectAll();
             highlightNeighbors(node);
         }
-        updateGraph(Graph);
+        updateGraph();
     })
     
     //edge functions
     .linkColor(edge =>{
-        return edge.color;
+        if(edge.selected){
+            return edge.color;
+        } else {
+            return EDGE_FADE;
+        }
+
     })
     .linkDirectionalParticles(edge => {
-        if(PARTICLES){
+        if(PARTICLES && edge.selected){
             return edge.value;
         } else {
             return 0
@@ -106,7 +146,7 @@ function buildGraph(Graph, graph_elements){
     .linkDirectionalParticleResolution(5)
     .linkWidth( edge =>{
         if(EDGE_WEIGHT){
-            return edge.value;
+            return edge.value * EDGE_SCALE;
         } else {
             return 0;
         }
@@ -119,17 +159,18 @@ function buildGraph(Graph, graph_elements){
     })
 }
 
-//Updates the graph after making a change
-function updateGraph(Graph){
-    Graph.nodeRelSize(4);
-}
-
+/**
+ * Links the Graph created by the graphics engine to the Cytoscape object. each cytoscape element
+ * receives a reference to its corresponding element in the 3d-force-graph object. 
+ */
 function linkToCytoscape(){
     cytoscapeLinked = true;
 
+    //grab the nodes and edges from the Graph object
     let d3Nodes = Graph.graphData().nodes;
     let d3Edges = Graph.graphData().links;
 
+    //build and connect nodes
     let cyNodes = d3Nodes.map(node =>{
         return {
             group: 'nodes',
@@ -142,6 +183,7 @@ function linkToCytoscape(){
         }
     })
 
+    //build and connect edges
     let cyEdges = d3Edges.map(edge =>{
         return {
             group: 'edges',
@@ -157,9 +199,11 @@ function linkToCytoscape(){
             }
         }
     })
+
+    //add nodes and edges to the cytocape graph
     cy.add(cyNodes);
     cy.add(cyEdges);
 
-    //set pick list values
+    //set pick list values for the Focus Node picklist. 
     generateNodeList();
 }
