@@ -33,9 +33,6 @@
         </div>
         <div class="col s2 sidebar-container">
             <ul class="collection with-header">
-                <li class="collection-header">
-                    <h5>Load Individual</h5>
-                </li>
                 <li class="collection-item">
                     <input type="file" class="file-input" id="getEdgeList" name="edge_list" style="visibility: hidden; width: 1px; height: 1px" />
                     <div>Edge List<a href="#!" onclick="document.getElementById('getEdgeList').click(); return false"
@@ -77,34 +74,33 @@
             </ul>
 
             <div class="row">
-
                 <button class="btn waves-effect waves-light light-blue darken-2" id="create-graph">Create Graph
                     <i class="material-icons right">timeline</i>
                 </button>
             </div>
-            <div class="row">
+            <div class="row slim-row left-align">
                 <label>
                     <input type="checkbox" class="filled-in" id="toggle-particles" />
                     <span>Toggle Particles</span>
                 </label>
             </div>
 
-            <div class="row">
+            <div class="row slim-row left-align">
                 <label>
                     <input type="checkbox" class="filled-in" id="toggle-edge-weights" />
                     <span>Toggle Edge Weights</span>
                 </label>
             </div>
             <div class="row">
-                    <span>Scale Edge Size</span>
+                <span>Scale Edge Size</span>
                 <p class="range-field scale-slider">
-                    <input type="range" id="edge-size" min="1" max="10" value="1"/>
+                    <input type="range" id="edge-size" min="1" max="10" value="1" />
                 </p>
             </div>
             <div class="row">
                 <span>Scale Node Size</span>
                 <p class="range-field scale-slider">
-                    <input type="range" id="node-size" min="1" max="10" value="1"/>
+                    <input type="range" id="node-size" min="1" max="10" value="1" />
                 </p>
             </div>
 
@@ -124,7 +120,6 @@
                 </select>
                 <label class="dropdown-wrapper">Focus Node</label>
             </div>
-
             <div class="row hide" id="color-scale">
                 <div class="col s2" id="scale-color-container">
                 </div>

@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (file_data.edge_list && file_data.node_ids && file_data.node_names && file_data.coordinates && file_data.weight_matrix) {
             const graph_elements = createGraphElements(file_data);
             buildGraph(Graph, graph_elements);
+            // hideFileInput();
         } else {
             //must have loaded in the correct data
             alert('You have not loaded all the necessary data');
@@ -105,3 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
 })
+/**
+ * TODO:
+ * Edge color by weight
+ * side by side compare with mouse movement transfer to both
+ * node color by frequency on type of graphlet
+ */

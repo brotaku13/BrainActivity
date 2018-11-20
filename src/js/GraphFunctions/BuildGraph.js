@@ -50,7 +50,7 @@ function createGraphElements(file_data){
             scaledColor: {}
         })
     }
-
+    
     //setting edges. Called "links" in this particular library
     let num_edges = file_data.edge_list.length;
     let edge_list= [];
@@ -142,10 +142,12 @@ function buildGraph(Graph, graph_elements){
     .linkDirectionalParticleSpeed(edge =>{
         return edge.value * .001;
     })
-    .linkDirectionalParticleWidth(3)
+    .linkDirectionalParticleWidth(edge =>{
+        return 3 * EDGE_SCALE
+    })
     .linkDirectionalParticleResolution(5)
     .linkWidth( edge =>{
-        if(EDGE_WEIGHT){
+        if(EDGE_WEIGHT && edge.selected){
             return edge.value * EDGE_SCALE;
         } else {
             return 0;

@@ -58,3 +58,8 @@ body {
     font-size: 12px;
     color: slategrey;
 }
+
+.slim-row{
+    margin-bottom: 5px !important;
+    padding: 0 10px 0 10px;
+}

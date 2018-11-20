@@ -79,3 +79,10 @@ function showScale(){
     let container = document.getElementById('color-scale');
     container.classList.remove('hide');
 }
+
+function hideFileInput(){
+    let containers = document.getElementsByClassName('file-input-container');
+    for(i = 0; i < containers.length; i++){
+        containers[i].classList.add('hide');
+    }
+}
