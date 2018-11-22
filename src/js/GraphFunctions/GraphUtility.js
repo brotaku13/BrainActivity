@@ -11,9 +11,10 @@ const colorScale = chroma.scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'r
  * Manual update of the Graph elements. Graph elements will not update unless this is called. 
  * nodeRelSize is used because it is a default scale factor for each node. 
  */
-function updateGraph() {
-    conGraph.nodeRelSize(4);
-    ocdGraph.nodeRelSize(4);
+function updateGraph(graphs) {
+    for(i = 0; i < graphs.length; i++){
+        graphs[i].graph.nodeRelSize(4);
+    }
 }
 
 /**
@@ -108,7 +109,7 @@ function moveCamera(event, graph, lookat){
  * it will color the node by a different scale. 
  * @param {String} colorIndex The type of coloring to apply to the nodes
  */
-function colorNodeBy(colorIndex) {
+function colorNodeBy(colorIndex, graphs) {
     //show the scale if hidden
     showScale();
     switch (colorIndex) {
@@ -133,8 +134,8 @@ function colorNodeBy(colorIndex) {
             hideScale();
     }
 
-    //update graph colors
-    updateGraph()
+    //update graphs colors
+    updateGraph(graphs);
 }
 
 /**

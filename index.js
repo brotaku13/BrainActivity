@@ -41,13 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
     file_data.con.container = conContainer;
     file_data.ocd.container = ocdContainer;
 
-    //initialize graph window and set width/height
-    // conGraph = ForceGraph3D();
-    // conGraph(document.getElementById('con-3d-graph'))
-    //     .width(dim.width)
-    //     .height(dim.height)
-
-    //init cytoscape graph object
     conCy = cytoscape({
         container: document.getElementById('conCy')
     });
@@ -179,13 +172,13 @@ document.addEventListener("DOMContentLoaded", function () {
     //toggle particle effects
     document.getElementById('toggle-particles').addEventListener('change', () => {
         PARTICLES = !PARTICLES;
-        updateGraph() //this is required to update the node graph geometries. without this line, the particles will continue to move
+        updateGraph(graphList); //this is required to update the node graph geometries. without this line, the particles will continue to move
     })
 
     //toggle edge Weight
     document.getElementById('toggle-edge-weights').addEventListener('change', () => {
         EDGE_WEIGHT = !EDGE_WEIGHT;
-        updateGraph() //this is required to update the node graph geometries. without this line, the particles will continue to move
+        updateGraph(graphList) //this is required to update the node graph geometries. without this line, the particles will continue to move
     })
 
     //set listener for focus node dropdown
@@ -204,21 +197,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('color-by-dropdown').addEventListener('change', event => {
         let colorIndex = event.target.value;
-        console.log('color index is', colorIndex);
 
-        colorNodeBy(colorIndex)
+        colorNodeBy(colorIndex, graphList)
     })
 
     document.getElementById('edge-size').addEventListener('change', (event) => {
         console.log(event.target.value);
         EDGE_SCALE = event.target.value;
-        updateGraph();
+        updateGraph(graphList);
     })
 
     document.getElementById('node-size').addEventListener('change', (event) => {
         console.log(event.target.value);
         NODE_SCALE = event.target.value;
-        updateGraph();
+        updateGraph(graphList);
     })
 
 })
