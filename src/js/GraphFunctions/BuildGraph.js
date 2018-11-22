@@ -21,6 +21,8 @@ var EDGE_WEIGHT = false;
 //managed which nodes are highlighted
 var highlightedNode = null;
 
+var nodeListGenerated = false;
+
 //manages whether cytoscape is linked or not. Cytoscape can only be linked after the graph has
 // been initialized, which does not happen until the the graphics engine starts. 
 var cytoscapeLinked = false;
@@ -28,23 +30,24 @@ var cytoscapeLinked = false;
 /**
  * creates the graph elements from the data loaded in from the file. Requires
  * Node Name, Node IDs, Edge Weight Matrix, Edge List, and node Coordinates
- * @param {Object} file_data Data loaded in from file
+ * @param {Object} group_data Data loaded in from file
  */
-function createGraphElements(file_data){
-    let num_nodes = file_data.node_ids.length;
+function createGraphElements(group_data){
+    let num_nodes = group_data.node_ids.length;
     let node_list = []
     
     //setting nodess
     for(i = 0; i < num_nodes; i++){
-        let node_name = file_data.node_names[i][0];
-        let id = file_data.node_ids[i][0];
-        let coordinates = file_data.coordinates[i];
+        let node_name = group_data.node_names[i][0];
+        let id = group_data.node_ids[i][0];
+        let coordinates = group_data.coordinates[i];
         node_list.push({
             name: node_name,
             id: id - 1,
             fx: coordinates[0] * SPACING_SCALE,
             fy: coordinates[1] * SPACING_SCALE,
             fz: coordinates[2] * SPACING_SCALE,
+            //TODO: Add Orbits
             color: '#40C4FF',
             selected: true,
             scaledColor: {}
@@ -52,14 +55,14 @@ function createGraphElements(file_data){
     }
     
     //setting edges. Called "links" in this particular library
-    let num_edges = file_data.edge_list.length;
+    let num_edges = group_data.edge_list.length;
     let edge_list= [];
     for(i = 0; i < num_edges; i++){
-        let edge = file_data.edge_list[i];
+        let edge = group_data.edge_list[i];
         edge_list.push({
             source: edge[0],
             target: edge[1],
-            value: file_data.weight_matrix[edge[0]][edge[1]],
+            value: group_data.weight_matrix[edge[0]][edge[1]],
             color: BASE_EDGE_COLOR,
             selected: true
         })
@@ -75,11 +78,10 @@ function createGraphElements(file_data){
  * @param {3D-Force-graph} Graph Graph object from the 3d-force-graph library
  * @param {object} graph_elements Object containing all of the nodes and edges for the graph to be created
  */
-function buildGraph(Graph, graph_elements){
+function buildGraph(graph, cy, graph_elements){
     
-    Graph(document.getElementById('3d-graph'))
     //load in data
-    .graphData(graph_elements)
+    graph.graphData(graph_elements)
 
     //node functions
     .nodeVal(()=>{
@@ -155,22 +157,24 @@ function buildGraph(Graph, graph_elements){
     })
     .onEngineTick(()=>{
         //link to cytoscape graph
-        if(!cytoscapeLinked){
-            linkToCytoscape();
+        if(!cy.linked){
+            linkToCytoscape(cy, graph);
+            graph.cooldownTicks(0);
         }
     })
+    
 }
 
 /**
  * Links the Graph created by the graphics engine to the Cytoscape object. each cytoscape element
  * receives a reference to its corresponding element in the 3d-force-graph object. 
  */
-function linkToCytoscape(){
-    cytoscapeLinked = true;
+function linkToCytoscape(cy, graph){
+    cy.linked = true;
 
     //grab the nodes and edges from the Graph object
-    let d3Nodes = Graph.graphData().nodes;
-    let d3Edges = Graph.graphData().links;
+    let d3Nodes = graph.graphData().nodes;
+    let d3Edges = graph.graphData().links;
 
     //build and connect nodes
     let cyNodes = d3Nodes.map(node =>{
@@ -180,7 +184,8 @@ function linkToCytoscape(){
                 id: String(node.id),
                 name: node.name,
                 color: BASE_NODE_COLOR,
-                nodeLink: node
+                nodeLink: node,
+                orbits: node.orbits,
             }
         }
     })
@@ -206,6 +211,10 @@ function linkToCytoscape(){
     cy.add(cyNodes);
     cy.add(cyEdges);
 
-    //set pick list values for the Focus Node picklist. 
-    generateNodeList();
+    //set pick list values for the Focus Node picklist.
+    if(!nodeListGenerated){
+        nodeListGenerated = true;
+        generateNodeList(cy);
+    }
+    
 }

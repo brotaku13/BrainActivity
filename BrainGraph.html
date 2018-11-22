@@ -26,57 +26,164 @@
 </head>
 
 <body>
-    <div class="cy-container" id="cy"></div>
-    <div class="row app-container" id="app-container">
-        <div class="col s10 graph-container" id="graph-container">
-            <div id="3d-graph"></div>
-        </div>
+    <ul id="slide-out" class="sidenav">
         <div class="col s2 sidebar-container">
             <ul class="collection with-header">
+
+                <!-- COLUMN NAMES -->
                 <li class="collection-item">
-                    <input type="file" class="file-input" id="getEdgeList" name="edge_list" style="visibility: hidden; width: 1px; height: 1px" />
-                    <div>Edge List<a href="#!" onclick="document.getElementById('getEdgeList').click(); return false"
-                            class="secondary-content"><i class="material-icons" id="edge_list_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">File</div>
+                        <div class="col s3">OCD</div>
+                        <div class="col s3">CON</div>
+                    </div>
                 </li>
 
+                <!-- EDGE LIST -->
                 <li class="collection-item">
-                    <input type="file" id="getMatrix" class="file-input" name="weight_matrix" style="visibility: hidden; width: 1px; height: 1px" />
-                    <div>Weight Matrix<a href="#!" onclick="document.getElementById('getMatrix').click(); return false"
-                            class="secondary-content"><i class="material-icons" id="weight_matrix_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Edge List
+                        </div>
+                        <div class="col s3">
+                            <input type="file" class="file-input" id="getOCDEdgeList" name="ocd_edge_list" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDEdgeList').click(); return false"
+                                    class="secondary-content"><i class="material-icons" id="ocd_edge_list_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" class="file-input" id="getCONEdgeList" name="con_edge_list" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONEdgeList').click(); return false"
+                                    class="secondary-content"><i class="material-icons" id="con_edge_list_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
                 </li>
 
+                <!-- WEIGHT MATRIX -->
                 <li class="collection-item">
-                    <input type="file" id="getCoordinates" class="file-input" name="coordinates" style="visibility: hidden; width: 1px; height: 1px" />
-                    <div>Coordinates<a href="#!" onclick="document.getElementById('getCoordinates').click(); return false"
-                            class="secondary-content"><i class="material-icons" id="coordinates_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Weight Matrix
+                        </div>
+                        <div class="col s3">
+                            <input type="file" class="file-input" id="getOCDWeightMatrix" name="ocd_weight_matrix" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDWeightMatrix').click(); return false"
+                                    class="secondary-content"><i class="material-icons" id="ocd_weight_matrix_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" class="file-input" id="getCONWeightMatrix" name="con_edge_list" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONEdgeList').click(); return false"
+                                    class="secondary-content"><i class="material-icons" id="con_weight_matrix_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
                 </li>
 
+                <!-- COORDINATES -->
                 <li class="collection-item">
-                    <input type="file" id="getNodeNames" class="file-input" name="node_names" style="visibility: hidden; width: 1px; height: 1px" />
-                    <div>Node Names<a href="#!" onclick="document.getElementById('getNodeNames').click(); return false"
-                            class="secondary-content"><i class="material-icons" id="node_names_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Coordinates
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getOCDCoordinates" class="file-input" name="ocd_coordinates" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDCoordinates').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="ocd_coordinates_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getCONCoordinates" class="file-input" name="con_coordinates" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONCoordinates').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="con_coordinates_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
                 </li>
 
+                <!-- NODE NAMES -->
                 <li class="collection-item">
-                    <input type="file" id="getNodeIds" class="file-input" name="node_ids" style="visibility: hidden; width: 1px; height: 1px" />
-                    <div>Node Ids<a href="#!" onclick="document.getElementById('getNodeIds').click(); return false"
-                            class="secondary-content"><i class="material-icons" id="node_ids_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Node Names
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getOCDNodeNames" class="file-input" name="ocd_node_names" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDNodeNames').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="ocd_node_names_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getCONNodeNames" class="file-input" name="con_node_names" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONNodeNames').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="con_node_names_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
                 </li>
-                <li class="collection-header">
-                    <h5>Load All</h5>
-                </li>
+
+                <!-- NODE IDS -->
                 <li class="collection-item">
-                    <input type="file" id="getBundle" class="file-input" name="bundle" style="visibility: hidden; width: 1px; height: 1px"
-                        multiple />
-                    <div>Bundle<a href="#!" onclick="document.getElementById('getBundle').click(); return false" class="secondary-content"><i
-                                class="material-icons" id="bundle_icon">arrow_upward</i></a></div>
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Node IDs
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getOCDNodeIds" class="file-input" name="ocd_node_ids" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDNodeIds').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="ocd_node_ids_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getCONNodeIds" class="file-input" name="con_node_ids" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONNodeIds').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="con_node_ids_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- ORBIT COUNTS -->
+                <li class="collection-item">
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Orbit Counts
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getOCDOrbits" class="file-input" name="ocd_orbits" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getOCDOrbits').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="ocd_orbits_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getCONOrbits" class="file-input" name="con_orbits" style="visibility: hidden; width: 1px; height: 1px" />
+                            <div><a href="#!" onclick="document.getElementById('getCONOrbits').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="con_orbits_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- LOAD BUNDLE -->
+                <li class="collection-item">
+                    <div class="row slim-row">
+                        <div class="col s6 left-align">
+                            Load All
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getOCDBundle" class="file-input" name="ocd_bundle" style="visibility: hidden; width: 1px; height: 1px" multiple/>
+                            <div><a href="#!" onclick="document.getElementById('getOCDBundle').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="ocd_bundle_icon">arrow_upward</i></a></div>
+                        </div>
+                        <div class="col s3">
+                            <input type="file" id="getCONBundle" class="file-input" name="con_bundle" style="visibility: hidden; width: 1px; height: 1px" multiple/>
+                            <div><a href="#!" onclick="document.getElementById('getCONBundle').click(); return false"
+                                class="secondary-content"><i class="material-icons" id="con_bundle_icon">arrow_upward</i></a></div>
+                        </div>
+                    </div>
                 </li>
             </ul>
 
             <div class="row">
-                <button class="btn waves-effect waves-light light-blue darken-2" id="create-graph">Create Graph
-                    <i class="material-icons right">timeline</i>
-                </button>
+                <div class="col s6">
+                    <button class="btn waves-effect waves-light light-blue darken-2" id="create-ocd-graph">Create OCD
+                        <i class="material-icons right">timeline</i>
+                    </button>
+                </div>
+                <div class="col s6">
+                    <button class="btn waves-effect waves-light light-blue darken-2" id="create-con-graph">Create CON
+                        <i class="material-icons right">timeline</i>
+                    </button>
+                </div>
             </div>
             <div class="row slim-row left-align">
                 <label>
@@ -126,6 +233,18 @@
                 <div class="col s10" id="scale-numbers">
                 </div>
             </div>
+        </div>
+    </ul>
+    <a href="#" data-target="slide-out" class="sidenav-trigger menu-button"><i class="material-icons">menu</i></a>
+
+    <div class="cy-container" id="ocdCy"></div>
+    <div class="cy-container" id="conCy"></div>
+    <div class="row app-container" id="app-container">
+        <div class="col graph-container hide" id="con-graph-container">
+            <div id="con-3d-graph"></div>
+        </div>
+        <div class="col graph-container hide" id="ocd-graph-container">
+            <div id="ocd-3d-graph"></div>
         </div>
     </div>
 </body>

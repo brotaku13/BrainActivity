@@ -48,7 +48,7 @@ function generateScaleNumbers(maxNum){
  * generates the node list for the Focus Node Dropdown. this will populate the dropdown with all 
  * of the node names in the graph. 
  */
-function generateNodeList(){
+function generateNodeList(cy){
     let input = document.getElementById('nodeList');
     let nodes = cy.nodes();
     let num_nodes = nodes.length;

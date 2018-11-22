@@ -1,35 +1,62 @@
-
 //global variable for the data loaded in from the files
-var file_data = {};
+var file_data = {
+    ocd: {
+        onScreen: false
+    },
+    con: {
+        onScreen: false
+    }
+}
+
+//variable to store the graphs to loop through to apply effects
+var graphList = []
 
 //init the primary grpah objects.
-var cy = undefined;
-var Graph = undefined;
+var conCy = undefined;
+var conGraph = undefined;
+
+var ocdCy = undefined;
+var ocdGraph = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
-    
+
     //init dropdown fields
     var elem = document.getElementById('color-by-dropdown');
     var elems = document.querySelectorAll('select')
     var instances = M.FormSelect.init(elems, {});
 
+    //init sidebar
+    elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems, {
+        edge: 'right',
+
+    });
+
     //init color scale
     generateScale(colorScale);
 
     //get hight/width of container to properly size the graph. 
-    let container = document.getElementById('graph-container')
-    let dim = container.getBoundingClientRect()
+    let conContainer = document.getElementById('con-graph-container');
+    let ocdContainer = document.getElementById('ocd-graph-container');
+    file_data.con.container = conContainer;
+    file_data.ocd.container = ocdContainer;
 
     //initialize graph window and set width/height
-    Graph = ForceGraph3D();
-    Graph(document.getElementById('3d-graph'))
-        .width(dim.width)
-        .height(dim.height)
+    // conGraph = ForceGraph3D();
+    // conGraph(document.getElementById('con-3d-graph'))
+    //     .width(dim.width)
+    //     .height(dim.height)
 
     //init cytoscape graph object
-    cy = cytoscape({
-        container: document.getElementById('cy')
+    conCy = cytoscape({
+        container: document.getElementById('conCy')
     });
+    conCy.linked = false;
+
+    ocdCy = cytoscape({
+        container: document.getElementById('ocdCy')
+    })
+    ocdCy.linked = false;
 
     //init file-input buttons
     let fileInputs = document.getElementsByClassName('file-input');
@@ -38,30 +65,114 @@ document.addEventListener("DOMContentLoaded", function () {
 
             //get button that was clicked
             let data_name = event.target.name;
-
+            let target = data_name.slice(0, 3);
+            data_name = data_name.slice(4, data_name.length);
             if (data_name !== 'bundle') {
                 let file = event.target.files[0];
                 if (file) {
-                    parseCSV(file, data_name);
+                    parseCSV(file, data_name, target);
                 }
             } else {
                 //loaded in a bundle of files
                 let fileList = event.target.files;
-                parseMultiple(fileList, data_name);
+                parseMultiple(fileList, data_name, target);
             }
 
         })
     }
 
-    //when create graph is clicked, it inits the graph functions
-    document.getElementById('create-graph').addEventListener('click', () => {
-        if (file_data.edge_list && file_data.node_ids && file_data.node_names && file_data.coordinates && file_data.weight_matrix) {
-            const graph_elements = createGraphElements(file_data);
-            buildGraph(Graph, graph_elements);
-            // hideFileInput();
+    //create OCD Graph
+    document.getElementById('create-ocd-graph').addEventListener('click', () => {
+        let group = file_data.ocd;
+        if (group.edge_list && group.node_ids && group.node_names && group.coordinates && group.weight_matrix) {
+            //set graph size and turn visible
+            if (file_data.con.onScreen) {
+                //if the other graph has been shown
+                file_data.con.container.classList.remove('s12');
+                file_data.con.container.classList.add('s6');
+                file_data.ocd.container.classList.add('s6');
+
+                conDim = file_data.con.container.getBoundingClientRect();
+                conGraph.width(conDim.width).height(conDim.height);
+
+            } else {
+                //other graph not showing
+                file_data.ocd.container.classList.add('s12');
+            }
+            
+            //make graph div visible
+            file_data.ocd.container.classList.remove('hide');
+
+            group.onScreen = true;
+            //get new size of container
+            let dim = file_data.ocd.container.getBoundingClientRect();
+
+            // Create the Graph
+            ocdGraph = ForceGraph3D();
+            ocdGraph(document.getElementById('ocd-3d-graph'))
+                .width(dim.width)
+                .height(dim.height)(document.getElementById('ocd-3d-graph'));
+
+            // add in the elements and build in the features
+            const graph_elements = createGraphElements(group);
+            buildGraph(ocdGraph, ocdCy, graph_elements);
+
+            //if other graph has been made, link cameras
+            if(file_data.con.onScreen){
+                linkCameras(conGraph, ocdGraph);
+            }
+
+            //add to graphlist
+            graphList.push({graph: ocdGraph, cy: ocdCy});
+
         } else {
-            //must have loaded in the correct data
-            alert('You have not loaded all the necessary data');
+            alert('You are missing valuable data')
+        }
+    })
+
+    //create CON Graph
+    document.getElementById('create-con-graph').addEventListener('click', () => {
+        let group = file_data.con;
+        if (group.edge_list && group.node_ids && group.node_names && group.coordinates && group.weight_matrix) {
+            //set graph size and turn visible
+            if (file_data.ocd.onScreen) {
+                //if the other graph has been shown; resize
+                file_data.ocd.container.classList.remove('s12');
+                file_data.ocd.container.classList.add('s6');
+                file_data.con.container.classList.add('s6');
+
+                ocdDim = file_data.ocd.container.getBoundingClientRect();
+                ocdGraph.width(ocdDim.width).height(ocdDim.height);
+
+            } else {
+                //other graph not showing
+                file_data.con.container.classList.add('s12');
+            }
+
+            file_data.con.container.classList.remove('hide');
+            group.onScreen = true;
+            //get new size of container
+            let dim = file_data.con.container.getBoundingClientRect();
+
+            conGraph = ForceGraph3D();
+            conGraph(document.getElementById('con-3d-graph'))
+                .width(dim.width)
+                .height(dim.height)(document.getElementById('con-3d-graph'));
+
+
+            const graph_elements = createGraphElements(group);
+            buildGraph(conGraph, conCy, graph_elements);
+
+            //if other graph has been made, link cameras
+            if(file_data.ocd.onScreen){
+                linkCameras(conGraph, ocdGraph);
+            }
+
+            //add to graph list for functions
+            graphList.push({graph: conGraph, cy: conCy});
+
+        } else {
+            alert('You are missing valuable data')
         }
     })
 
@@ -69,37 +180,42 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('toggle-particles').addEventListener('change', () => {
         PARTICLES = !PARTICLES;
         updateGraph() //this is required to update the node graph geometries. without this line, the particles will continue to move
-        console.log('Value of particles is ', PARTICLES);
     })
 
     //toggle edge Weight
     document.getElementById('toggle-edge-weights').addEventListener('change', () => {
         EDGE_WEIGHT = !EDGE_WEIGHT;
         updateGraph() //this is required to update the node graph geometries. without this line, the particles will continue to move
-        console.log('Value of edge_weight is ', EDGE_WEIGHT);
     })
 
     //set listener for focus node dropdown
-    document.getElementById('nodeList').addEventListener('change', (event)=>{
+    document.getElementById('nodeList').addEventListener('change', (event) => {
         let nodeId = event.target.value;
-        console.log('Chose node ID: ', nodeId);
-        focusNode(nodeId);
+        if (file_data.ocd.onScreen && file_data.con.onScreen) {
+            focusNode(nodeId, conGraph, conCy);
+        } else if (file_data.ocd.onScreen && !file_data.con.onScreen) {
+            focusNode(nodeId, ocdGraph, ocdCy);
+        } else if (!file_data.ocd.onScreen && file_data.con.onScreen) {
+            focusNode(nodeId, conGraph, conCy);
+        } else {
+            alert('No Graphs Displayed')
+        }
     })
 
-    document.getElementById('color-by-dropdown').addEventListener('change', event =>{
+    document.getElementById('color-by-dropdown').addEventListener('change', event => {
         let colorIndex = event.target.value;
         console.log('color index is', colorIndex);
 
         colorNodeBy(colorIndex)
     })
 
-    document.getElementById('edge-size').addEventListener('change', (event)=>{
+    document.getElementById('edge-size').addEventListener('change', (event) => {
         console.log(event.target.value);
         EDGE_SCALE = event.target.value;
         updateGraph();
     })
 
-    document.getElementById('node-size').addEventListener('change', (event)=>{
+    document.getElementById('node-size').addEventListener('change', (event) => {
         console.log(event.target.value);
         NODE_SCALE = event.target.value;
         updateGraph();

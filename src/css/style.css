@@ -63,3 +63,18 @@ body {
     margin-bottom: 5px !important;
     padding: 0 10px 0 10px;
 }
+
+ul:not(.browser-default){
+    padding: 10px !important;
+}
+
+.collection-item{
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+.menu-button{
+    z-index: 3;
+    position: absolute;
+    float: right;
+}

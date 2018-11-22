@@ -12,7 +12,8 @@ const colorScale = chroma.scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'r
  * nodeRelSize is used because it is a default scale factor for each node. 
  */
 function updateGraph() {
-    Graph.nodeRelSize(4);
+    conGraph.nodeRelSize(4);
+    ocdGraph.nodeRelSize(4);
 }
 
 /**
@@ -66,18 +67,41 @@ function deselectAll() {
  * to focus on the node. 
  * @param {Number} nodeId ID for a node in the Graph
  */
-function focusNode(nodeId) {
+function focusNode(nodeId, graph, cy) {
     let cyNodes = cy.nodes(`#${nodeId}`);
     let node = cyNodes[0].data().nodeLink;
+
     const distance = 100;
     const distRatio = 1 + distance / Math.hypot(node.fx, node.fy, node.fz);
 
-    Graph.cameraPosition(
+    graph.cameraPosition(
         { x: node.fx * distRatio, y: node.fy * distRatio, z: node.fz * distRatio }, //new position
         node,
         3000 // transition time
-    )
+    );
 }
+
+function linkCameras(conGraph, ocdGraph){
+    //link con to ocd
+    ocdGraph.camera().matrix = conGraph.camera().matrix;
+    ocdGraph.camera().rotation = conGraph.camera().rotation;
+    ocdGraph.camera().quaternions = conGraph.camera().quaternions;
+    ocdGraph.camera().up = conGraph.camera().up;
+
+    conGraph.controls().addEventListener('change', event =>{
+        moveCamera(event.target.object, ocdGraph, conGraph.cameraPosition().lookat);
+    })
+
+}
+
+function moveCamera(event, graph, lookat){
+    graph.cameraPosition({
+        x: event.position.x,
+        y: event.position.y,
+        z: event.position.z
+    }, lookat)
+}
+
 
 /**
  * Controller for the node coloring. Depending on which colorIndex this function receives, 
