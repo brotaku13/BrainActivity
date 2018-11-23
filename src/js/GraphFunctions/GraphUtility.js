@@ -1,4 +1,3 @@
-
 // generates a color scale to be used when scaling the colors of the nodes
 const colorScale = chroma.scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'red'])
     .mode('lch')
@@ -12,7 +11,7 @@ const colorScale = chroma.scale(['purple', 'blue', 'cyan', 'green', 'yellow', 'r
  * nodeRelSize is used because it is a default scale factor for each node. 
  */
 function updateGraph(graphs) {
-    for(i = 0; i < graphs.length; i++){
+    for (i = 0; i < graphs.length; i++) {
         graphs[i].graph.nodeRelSize(4);
     }
 }
@@ -23,23 +22,26 @@ function updateGraph(graphs) {
  * and fading those elements out. 
  * @param {Graph node} node a node object from the Graph
  */
-function highlightNeighbors(node) {
-    let elems = cy.nodes(`#${node.id}`);
-    if (elems.length !== 0) {
+function highlightNeighbors(nodeID, graphs) {
+    for (i = 0; i < graphs.length; i++) {
+        let elems = graphs[i].cy.nodes(`#${nodeID}`);
 
-        let neighbors = elems.closedNeighborhood()
-        let notNeighbors = cy.elements().difference(neighbors);
-        for (i = 0; i < notNeighbors.length; i++) {
-            let elem = notNeighbors[i];
-            if (elem.isNode()) {
-                elem.data().nodeLink.selected = false;
-            } else {
-                elem.data().edgeLink.selected = false;
+        if (elems.length !== 0) {
+
+            let neighbors = elems.closedNeighborhood()
+            let notNeighbors = graphs[i].cy.elements().difference(neighbors);
+
+            for (n = 0; n < notNeighbors.length; n++) {
+                let elem = notNeighbors[n];
+                if (elem.isNode()) {
+                    elem.data().nodeLink.selected = false;
+                } else {
+                    elem.data().edgeLink.selected = false;
+                }
             }
+        } else {
+            console.log('Could not find specified node');
         }
-
-    } else {
-        console.log('Could not find specified node');
     }
 }
 
@@ -47,20 +49,24 @@ function highlightNeighbors(node) {
  * deselects all nodes by setting the selected property to true. Uses Promises which makes
  * this operation async and slightly more performant
  */
-function deselectAll() {
-    let cyNodes = cy.nodes();
-    let cyEdges = cy.edges();
+function deselectAll(graphs) {
+    for (i = 0; i < graphs.length; i++) {
+        let cyNodes = graphs[i].cy.nodes();
+        let cyEdges = graphs[i].cy.edges();
 
-    new Promise((resolve, reject) => {
-        for (i = 0; i < cyNodes.length; i++) {
-            cyNodes[i].data().nodeLink.selected = true;
-        }
-    })
-    new Promise((resolve, reject) => {
-        for (i = 0; i < cyEdges.length; i++) {
-            cyEdges[i].data().edgeLink.selected = true;
-        }
-    })
+        new Promise((resolve, reject) => {
+            for (n = 0; n < cyNodes.length; n++) {
+                cyNodes[n].data().nodeLink.selected = true;
+            }
+        })
+        new Promise((resolve, reject) => {
+            for (n = 0; n < cyEdges.length; n++) {
+                cyEdges[n].data().edgeLink.selected = true;
+            }
+        })
+    }
+
+
 }
 
 /**
@@ -75,27 +81,30 @@ function focusNode(nodeId, graph, cy) {
     const distance = 100;
     const distRatio = 1 + distance / Math.hypot(node.fx, node.fy, node.fz);
 
-    graph.cameraPosition(
-        { x: node.fx * distRatio, y: node.fy * distRatio, z: node.fz * distRatio }, //new position
+    graph.cameraPosition({
+            x: node.fx * distRatio,
+            y: node.fy * distRatio,
+            z: node.fz * distRatio
+        }, //new position
         node,
         3000 // transition time
     );
 }
 
-function linkCameras(conGraph, ocdGraph){
+function linkCameras(conGraph, ocdGraph) {
     //link con to ocd
     ocdGraph.camera().matrix = conGraph.camera().matrix;
     ocdGraph.camera().rotation = conGraph.camera().rotation;
     ocdGraph.camera().quaternions = conGraph.camera().quaternions;
     ocdGraph.camera().up = conGraph.camera().up;
 
-    conGraph.controls().addEventListener('change', event =>{
+    conGraph.controls().addEventListener('change', event => {
         moveCamera(event.target.object, ocdGraph, conGraph.cameraPosition().lookat);
     })
 
 }
 
-function moveCamera(event, graph, lookat){
+function moveCamera(event, graph, lookat) {
     graph.cameraPosition({
         x: event.position.x,
         y: event.position.y,
@@ -103,34 +112,34 @@ function moveCamera(event, graph, lookat){
     }, lookat)
 }
 
-
 /**
  * Controller for the node coloring. Depending on which colorIndex this function receives, 
- * it will color the node by a different scale. 
+ * it will color the node by a different scale. Use this for everything but coloring by node orbit
+ * frequency
  * @param {String} colorIndex The type of coloring to apply to the nodes
  */
-function colorNodeBy(colorIndex, graphs) {
+function colorNodeBy(colorIndex, graphs, maxValues) {
     //show the scale if hidden
     showScale();
     switch (colorIndex) {
         case 'degree':
-            colorByDegree();
-            generateScaleNumbers(cy.maxDegree);
+            colorByDegree(graphs, maxValues);
+            generateScaleNumbers(maxValues.degree);
             break
         case 'strength':
-            colorByStrength();
-            generateScaleNumbers(cy.maxStrength);
+            colorByStrength(graphs, maxValues);
+            generateScaleNumbers(maxValues.strength);
             break;
         case 'degree_centrality':
-            colorByDegreeCentrality();
-            generateScaleNumbers(cy.maxDegreeCentrality);
+            colorByDegreeCentrality(graphs, maxValues);
+            generateScaleNumbers(maxValues.degreeCentrality);
             break;
         case 'betweenness_centrality':
-            colorByBetweennessCentrality();
-            generateScaleNumbers(cy.maxBetweennessCentrality);
+            colorByBetweennessCentrality(graphs, maxValues);
+            generateScaleNumbers(maxValues.betweennessCentrality);
             break;
         default:
-            colorByBase();
+            colorByBase(graphs);
             hideScale();
     }
 
@@ -141,30 +150,40 @@ function colorNodeBy(colorIndex, graphs) {
 /**
  * Colors the nodes based on their total degree. 
  */
-function colorByDegree() {
-    let nodes = cy.nodes();
-
-    if (!cy.maxDegree) {
+function colorByDegree(graphs, maxValues) {
+    if (!maxValues.degree) {
         let maxDegree = 0;
-        for (i = 0; i < nodes.length; i++) {
-            let degree = nodes[i].degree();
-            nodes[i].data().nodeLink.degree = degree !== 0 ? degree : 1;
+        //find max degree in both graphs while also setting the degree value in each node
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
 
-            if (degree > maxDegree) {
-                maxDegree = degree;
+            for (n = 0; n < nodes.length; n++) {
+                let degree = nodes[n].degree();
+                nodes[n].data().nodeLink.degree = degree !== 0 ? degree : 1;
+
+                //set maxDegee
+                maxDegree = max(degree, maxDegree);
             }
         }
-        cy.maxDegree = maxDegree;
+        //set maxDegee between the 2 graphs for use later
+        maxValues.degree = maxDegree;
 
-        for (i = 0; i < nodes.length; i++) {
-            let degree = nodes[i].data().nodeLink.degree;
-            let color = getColor((degree / cy.maxDegree) * 100)
-            nodes[i].data().nodeLink.scaledColor.degree = color;
+        //after found max, find and set the color from a linear color scale
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
+            for (n = 0; n < nodes.length; n++) {
+                let degree = nodes[n].data().nodeLink.degree;
+                let color = getColor(degree, maxValues.degree);
+                nodes[n].data().nodeLink.scaledColor.degree = color;
+            }
         }
     }
-    for (i = 0; i < nodes.length; i++) {
-        let graphNode = nodes[i].data().nodeLink;
-        graphNode.color = graphNode.scaledColor.degree;
+    for (i = 0; i < graphs.length; i++) {
+        let nodes = graphs[i].cy.nodes();
+        for (n = 0; n < nodes.length; n++) {
+            let graphNode = nodes[n].data().nodeLink;
+            graphNode.color = graphNode.scaledColor.degree
+        }
     }
 }
 
@@ -172,130 +191,204 @@ function colorByDegree() {
  * color nodes by total strength. Strength is defined as the total sum of their adjacent 
  * edge weights. (Opsahl)
  */
-function colorByStrength() {
-    let nodes = cy.nodes();
-    if (!cy.maxStrength) {
+function colorByStrength(graphs, maxValues) {
+    if (!maxValues.strength) {
         let maxStrength = 0;
-        for (i = 0; i < nodes.length; i++) {
-            let adjacent = nodes[i].neighborhood();
-            let total = adjacent.reduce((acc, elem) => {
-                if (elem.isEdge()) {
-                    return acc + elem.data().weight;
-                }
-                return acc;
-            }, 0)
+        //find max strength in both graphs while also setting the strength value in each node
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
 
-            nodes[i].data().nodeLink.strength = total !== 0 ? total : .01;
-            if (total > maxStrength) {
-                maxStrength = total;
+            for (n = 0; n < nodes.length; n++) {
+                let adjacent = nodes[n].neighborhood();
+                let strength = adjacent.reduce((acc, elem) => {
+                    if (elem.isEdge()) {
+                        return acc + elem.data().weight;
+                    }
+                    return acc;
+                }, 0)
+
+                nodes[n].data().nodeLink.strength = strength !== 0 ? strength : .01;
+                maxStrength = max(strength, maxStrength)
             }
         }
-        cy.maxStrength = maxStrength;
+        //set max Strength between the 2 graphs for use later
+        maxValues.strength = maxStrength;
 
-        for (i = 0; i < nodes.length; i++) {
-            let strength = nodes[i].data().nodeLink.strength;
-            let color = getColor((strength / cy.maxStrength) * 100)
-            nodes[i].data().nodeLink.scaledColor.strength = color;
+        //after found max, find and set the color from a linear color scale
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
+            for (n = 0; n < nodes.length; n++) {
+                let strength = nodes[n].data().nodeLink.strength;
+                let color = getColor(strength, maxValues.strength);
+                nodes[n].data().nodeLink.scaledColor.strength = color;
+            }
         }
     }
-    for (i = 0; i < nodes.length; i++) {
-        let graphNode = nodes[i].data().nodeLink;
-        graphNode.color = graphNode.scaledColor.strength;
+    for (i = 0; i < graphs.length; i++) {
+        let nodes = graphs[i].cy.nodes();
+        for (n = 0; n < nodes.length; n++) {
+            let graphNode = nodes[n].data().nodeLink;
+            graphNode.color = graphNode.scaledColor.strength
+        }
     }
 }
 
 /**
  * Color node based on weighted degree centrality. 
  */
-function colorByDegreeCentrality() {
-    let nodes = cy.nodes();
-    if (!cy.maxDegreeCentrality) {
+function colorByDegreeCentrality(graphs, maxValues) {
+    if (!maxValues.degreeCentrality) {
         let maxDegreeCentrality = 0;
-        let centralaityConfig = {
+
+        let centralityConfig = {
             root: undefined,
             weight: edge => {
                 return edge.data().weight;
             }
         }
-        for (i = 0; i < nodes.length; i++) {
-            let root = nodes[i];
-            centralaityConfig.root = root;
-            let degreeCen = cy.$().degreeCentrality(centralaityConfig).degree;
+        //find max degree centrality in both graphs while also setting the degree centrality value in each node
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
 
-            nodes[i].data().nodeLink.degreeCentrality = degreeCen;
-            if (degreeCen > maxDegreeCentrality) {
-                maxDegreeCentrality = degreeCen;
+            for (n = 0; n < nodes.length; n++) {
+                let root = nodes[n];
+                centralityConfig.root = root;
+                let degreeCen = graphs[i].cy.$().degreeCentrality(centralityConfig).degree;
+
+                nodes[n].data().nodeLink.degreeCentrality = degreeCen;
+
+                maxDegreeCentrality = max(maxDegreeCentrality, degreeCen);
             }
         }
-        cy.maxDegreeCentrality = maxDegreeCentrality;
+        //set max Strength between the 2 graphs for use later
+        maxValues.degreeCentrality = maxDegreeCentrality;
 
-        for (i = 0; i < nodes.length; i++) {
-            let degreeCen = nodes[i].data().nodeLink.degreeCentrality;
-            let color = getColor((degreeCen / cy.maxDegreeCentrality) * 100)
-            nodes[i].data().nodeLink.scaledColor.degreeCentrality = color;
+        //after found max, find and set the color from a linear color scale
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
+            for (n = 0; n < nodes.length; n++) {
+                let degreeCentrality = nodes[n].data().nodeLink.degreeCentrality;
+                let color = getColor(degreeCentrality, maxValues.degreeCentrality);
+                nodes[n].data().nodeLink.scaledColor.degreeCentrality = color;
+            }
         }
     }
-    for (i = 0; i < nodes.length; i++) {
-        let graphNode = nodes[i].data().nodeLink;
-        graphNode.color = graphNode.scaledColor.degreeCentrality
+
+    for (i = 0; i < graphs.length; i++) {
+        let nodes = graphs[i].cy.nodes();
+        for (n = 0; n < nodes.length; n++) {
+            let graphNode = nodes[n].data().nodeLink;
+            graphNode.color = graphNode.scaledColor.degreeCentrality
+        }
     }
 }
 
 /**
  * color node based on betweenness centrality
  */
-function colorByBetweennessCentrality(){
-    let nodes = cy.nodes();
-    if (!cy.maxBetweennessCentrality) {
+function colorByBetweennessCentrality(graphs, maxValues) {
+    if (!maxValues.betweennessCentrality) {
 
         let maxBetweennessCentrality = 0;
-        let bc = cy.$().betweennessCentrality();
 
-        for (i = 0; i < nodes.length; i++) {
-            let root = nodes[i];
-            let betweennessCen = bc.betweenness(root);
+        //find max betweenness centrality in both graphs while also setting the betweenness centrality value in each node
+        for (i = 0; i < graphs.length; i++) {
 
-            nodes[i].data().nodeLink.betweennessCentrality = betweennessCen;
-            if (betweennessCen > maxBetweennessCentrality) {
-                maxBetweennessCentrality = betweennessCen;
+            let bc = graphs[i].cy.$().betweennessCentrality();
+            let nodes = graphs[i].cy.nodes();
+
+            for (n = 0; n < nodes.length; n++) {
+                let root = nodes[n];
+                let betweennessCen = bc.betweenness(root);
+
+                nodes[n].data().nodeLink.betweennessCentrality = betweennessCen;
+
+                maxBetweennessCentrality = max(betweennessCen, maxBetweennessCentrality);
             }
         }
-        cy.maxBetweennessCentrality = maxBetweennessCentrality;
+        //set max Strength between the 2 graphs for use later
+        maxValues.betweennessCentrality = maxBetweennessCentrality;
 
-        for (i = 0; i < nodes.length; i++) {
-            let betweenCen = nodes[i].data().nodeLink.betweennessCentrality;
-            let color = getColor((betweenCen / cy.maxBetweennessCentrality) * 100)
-            nodes[i].data().nodeLink.scaledColor.betweennessCentrality = color;
+        //after found max, find and set the color from a linear color scale
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
+            for (n = 0; n < nodes.length; n++) {
+                let betweennessCentrality = nodes[n].data().nodeLink.betweennessCentrality;
+                let color = getColor(betweennessCentrality, maxValues.betweennessCentrality);
+                nodes[n].data().nodeLink.scaledColor.betweennessCentrality = color;
+            }
         }
     }
-    for (i = 0; i < nodes.length; i++) {
-        let graphNode = nodes[i].data().nodeLink;
-        graphNode.color = graphNode.scaledColor.betweennessCentrality;
+
+    for (i = 0; i < graphs.length; i++) {
+        let nodes = graphs[i].cy.nodes();
+        for (n = 0; n < nodes.length; n++) {
+            let graphNode = nodes[n].data().nodeLink;
+            graphNode.color = graphNode.scaledColor.betweennessCentrality
+        }
+    }
+}
+
+function colorByOrbit(orbitId, graphs, maxValues){
+    if(!maxValues.orbits[orbitId]){
+        let maxFrequency = 0;
+
+        for(i = 0; i < graphs.length; i++){
+            let nodes = graphs[i].cy.nodes();
+
+            for(n = 0; n < nodes.length; n++){
+                let frequency = nodes[n].data().orbits[orbitId];
+                maxFrequency = max(frequency, maxFrequency);
+            }
+        }
+
+        maxValues.orbits[orbitId] = maxFrequency;
+        for (i = 0; i < graphs.length; i++) {
+            let nodes = graphs[i].cy.nodes();
+            for (n = 0; n < nodes.length; n++) {
+                let frequency = nodes[n].data().nodeLink.orbits[orbitId];
+                let color = getColor(frequency, maxValues.orbits[orbitId]);
+                nodes[n].data().nodeLink.scaledColor.orbits[orbitId] = color;
+            }
+        }
+    }
+
+    for (i = 0; i < graphs.length; i++) {
+        let nodes = graphs[i].cy.nodes();
+        for (n = 0; n < nodes.length; n++) {
+            let graphNode = nodes[n].data().nodeLink;
+            graphNode.color = graphNode.scaledColor.orbits[orbitId];
+        }
     }
 }
 
 /**
  * Color all nodes the base color, removing all scaling. 
  */
-function colorByBase(){
-    let cyNodes = cy.nodes();
-    let cyEdges = cy.edges();
-
-    new Promise((resolve, reject) => {
-        for (i = 0; i < cyNodes.length; i++) {
-            cyNodes[i].data().nodeLink.color = BASE_NODE_COLOR;
-        }
-    })
-    new Promise((resolve, reject) => {
-        for (i = 0; i < cyEdges.length; i++) {
-            cyEdges[i].data().edgeLink.color = BASE_EDGE_COLOR;
-        }
-    })
+function colorByBase(graphs) {
+    for (i = 0; i < graphs.length; i++) {
+        let cyNodes = graphs[i].cy.nodes();
+        let cyEdges = graphs[i].cy.edges();
+        new Promise((resolve, reject) => {
+            for (n = 0; n < cyNodes.length; n++) {
+                cyNodes[n].data().nodeLink.color = BASE_NODE_COLOR;
+            }
+        })
+        new Promise((resolve, reject) => {
+            for (n = 0; n < cyEdges.length; n++) {
+                cyEdges[n].data().edgeLink.color = BASE_EDGE_COLOR;
+            }
+        })
+    }
 }
 
 //Gets the color from te generated color array. 
-function getColor(ratio) {
-    let percent = Math.round(ratio);
+function getColor(current, max) {
+    let percent = Math.round((current / max) * 100)
     percent = percent !== 0 ? percent : 1;
     return colorScale[percent - 1];
+}
+
+function max(a, b) {
+    return a > b ? a : b;
 }

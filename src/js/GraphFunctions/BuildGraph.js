@@ -18,6 +18,9 @@ var NODE_SCALE = 1
 var PARTICLES = false;
 var EDGE_WEIGHT = false;
 
+//use to tell if the graph should display orbit frequency
+var ORBIT_COLORING = -1
+
 //managed which nodes are highlighted
 var highlightedNode = null;
 
@@ -47,10 +50,10 @@ function createGraphElements(group_data){
             fx: coordinates[0] * SPACING_SCALE,
             fy: coordinates[1] * SPACING_SCALE,
             fz: coordinates[2] * SPACING_SCALE,
-            //TODO: Add Orbits
+            orbits: group_data.orbits ? group_data.orbits[i] : [],
             color: '#40C4FF',
             selected: true,
-            scaledColor: {}
+            scaledColor: {orbits:{}}
         })
     }
     
@@ -78,14 +81,14 @@ function createGraphElements(group_data){
  * @param {3D-Force-graph} Graph Graph object from the 3d-force-graph library
  * @param {object} graph_elements Object containing all of the nodes and edges for the graph to be created
  */
-function buildGraph(graph, cy, graph_elements){
+function buildGraph(graph, cy, graph_elements, graphs){
     
     //load in data
     graph.graphData(graph_elements)
 
     //node functions
     .nodeVal(()=>{
-        return 10 * NODE_SCALE;
+        return 50 * NODE_SCALE;
     })
     .nodeLabel((node)=>{
         //node label is a composite of all of the calculations that have been made on the node
@@ -102,6 +105,9 @@ function buildGraph(graph, cy, graph_elements){
         if(node.betweennessCentrality !== undefined){
             name += `<div>Betweenness Centrality: ${node.betweennessCentrality}</div>`;
         }
+        if(ORBIT_COLORING >= 0){
+            name += `<div>Orbit ${ORBIT_COLORING} Frequency: ${node.orbits[ORBIT_COLORING]}</div>`
+        }
         return name;
     })
     .nodeColor(node =>{
@@ -114,15 +120,15 @@ function buildGraph(graph, cy, graph_elements){
     .nodeResolution(30)
     .enableNodeDrag(false)
     .onNodeClick(node =>{
-        if(node === highlightedNode){
+        if(node.id === highlightedNode){
             highlightedNode = null;
-            deselectAll();
+            deselectAll(graphs);
         } else {
-            highlightedNode = node;
-            deselectAll();
-            highlightNeighbors(node);
+            highlightedNode = node.id;
+            deselectAll(graphs);
+            highlightNeighbors(node.id, graphs);
         }
-        updateGraph();
+        updateGraph(graphs);
     })
     
     //edge functions
@@ -159,7 +165,6 @@ function buildGraph(graph, cy, graph_elements){
         //link to cytoscape graph
         if(!cy.linked){
             linkToCytoscape(cy, graph);
-            graph.cooldownTicks(0);
         }
     })
     

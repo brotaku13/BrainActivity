@@ -9,7 +9,8 @@ var file_data = {
 }
 
 //variable to store the graphs to loop through to apply effects
-var graphList = []
+var graphList = [];
+var maxValues = {orbits: {}};
 
 //init the primary grpah objects.
 var conCy = undefined;
@@ -31,6 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
         edge: 'right',
 
     });
+
+    //grab the title bars for each graph to be revealed later
+    var ocdTitle = document.getElementById('ocd-title');
+    var conTitle = document.getElementById('con-title');
 
     //init color scale
     generateScale(colorScale);
@@ -88,13 +93,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 conDim = file_data.con.container.getBoundingClientRect();
                 conGraph.width(conDim.width).height(conDim.height);
 
+                //one graph already showing, init second title bar
+                conTitle.classList.remove('s12');
+                conTitle.classList.add('s6');
+                ocdTitle.classList.add('s6');
+
             } else {
                 //other graph not showing
                 file_data.ocd.container.classList.add('s12');
+                ocdTitle.classList.add('s12')
             }
             
             //make graph div visible
             file_data.ocd.container.classList.remove('hide');
+            ocdTitle.classList.remove('hide');
 
             group.onScreen = true;
             //get new size of container
@@ -108,11 +120,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // add in the elements and build in the features
             const graph_elements = createGraphElements(group);
-            buildGraph(ocdGraph, ocdCy, graph_elements);
+            buildGraph(ocdGraph, ocdCy, graph_elements, graphList);
 
             //if other graph has been made, link cameras
             if(file_data.con.onScreen){
                 linkCameras(conGraph, ocdGraph);
+
+                //reset the maxValues because now there are two graphs on screen
+                maxValues = {orbits: {}};
+                colorNodeBy('', graphList, maxValues);
             }
 
             //add to graphlist
@@ -137,12 +153,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 ocdDim = file_data.ocd.container.getBoundingClientRect();
                 ocdGraph.width(ocdDim.width).height(ocdDim.height);
 
+                ocdTitle.classList.remove('s12');
+                ocdTitle.classList.add('s6');
+                conTitle.classList.add('s6');
+
             } else {
                 //other graph not showing
                 file_data.con.container.classList.add('s12');
+                conTitle.classList.add('s12');
             }
 
             file_data.con.container.classList.remove('hide');
+            conTitle.classList.remove('hide');
+
             group.onScreen = true;
             //get new size of container
             let dim = file_data.con.container.getBoundingClientRect();
@@ -154,11 +177,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const graph_elements = createGraphElements(group);
-            buildGraph(conGraph, conCy, graph_elements);
+            buildGraph(conGraph, conCy, graph_elements, graphList);
 
-            //if other graph has been made, link cameras
+            //if other graph has been made, link cameras and reset maxValues
             if(file_data.ocd.onScreen){
                 linkCameras(conGraph, ocdGraph);
+                
+                //reset the maxValues because now there are two graphs on screen
+                maxValues = {orbits: {}};
+                colorNodeBy('', graphList, maxValues);
             }
 
             //add to graph list for functions
@@ -197,8 +224,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('color-by-dropdown').addEventListener('change', event => {
         let colorIndex = event.target.value;
+        if(colorIndex !== 'orbit_frequency'){
+            colorNodeBy(colorIndex, graphList, maxValues);
+            document.getElementById('orbit-input').classList.add('hide');
 
-        colorNodeBy(colorIndex, graphList)
+            //turn off notation for current node count
+            ORBIT_COLORING = -1;
+        } else {
+            //if asking to color by orbit frequency, require additional information
+            document.getElementById('orbit-input').classList.remove('hide');
+        }
     })
 
     document.getElementById('edge-size').addEventListener('change', (event) => {
@@ -211,6 +246,23 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(event.target.value);
         NODE_SCALE = event.target.value;
         updateGraph(graphList);
+    })
+
+    document.getElementById('color-by-orbit').addEventListener('click', event =>{
+        let orbitId = document.getElementById('orbit-number').value;
+        if(orbitId > 72 || orbitId < 0){
+            alert('No data for those orbit counts');
+        } else {
+            //using orbit frequency coloring - set this for the node labels
+            ORBIT_COLORING = orbitId;
+
+            //color by orbit frequency
+            colorByOrbit(orbitId, graphList, maxValues);
+            generateScaleNumbers(maxValues.orbits[orbitId]);
+
+            showScale(); //showscale
+            updateGraph(graphList);
+        }
     })
 
 })

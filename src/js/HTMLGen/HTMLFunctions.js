@@ -37,7 +37,7 @@ function generateScaleNumbers(maxNum){
     [highNum, highmidNum, midNum, lowmidNum, lowNum].forEach(num =>{
         let temp = document.createElement('div')
         temp.classList.add('row', 'left-align');
-        temp.setAttribute("style", "margin-bottom: 0 !important;")
+        temp.setAttribute("style", "margin-bottom: 0 !important; color: white;")
         temp.innerHTML = num;
         container.appendChild(temp);
     })
