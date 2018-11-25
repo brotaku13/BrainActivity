@@ -266,9 +266,3 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
 })
-/**
- * TODO:
- * Edge color by weight
- * side by side compare with mouse movement transfer to both
- * node color by frequency on type of graphlet
- */
