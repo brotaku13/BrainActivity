@@ -19,16 +19,13 @@ var PARTICLES = false;
 var EDGE_WEIGHT = false;
 
 //use to tell if the graph should display orbit frequency
-var ORBIT_COLORING = -1
+var ORBIT_COLORING = null
 
 //managed which nodes are highlighted
 var highlightedNode = null;
 
 var nodeListGenerated = false;
 
-//manages whether cytoscape is linked or not. Cytoscape can only be linked after the graph has
-// been initialized, which does not happen until the the graphics engine starts. 
-var cytoscapeLinked = false;
 
 /**
  * creates the graph elements from the data loaded in from the file. Requires
@@ -39,7 +36,7 @@ function createGraphElements(group_data){
     let num_nodes = group_data.node_ids.length;
     let node_list = []
     
-    //setting nodess
+    //setting nodes
     for(i = 0; i < num_nodes; i++){
         let node_name = group_data.node_names[i][0];
         let id = group_data.node_ids[i][0];
@@ -105,7 +102,7 @@ function buildGraph(graph, cy, graph_elements, graphs){
         if(node.betweennessCentrality !== undefined){
             name += `<div>Betweenness Centrality: ${node.betweennessCentrality}</div>`;
         }
-        if(ORBIT_COLORING >= 0){
+        if(ORBIT_COLORING != null){
             name += `<div>Orbit ${ORBIT_COLORING} Frequency: ${node.orbits[ORBIT_COLORING]}</div>`
         }
         return name;

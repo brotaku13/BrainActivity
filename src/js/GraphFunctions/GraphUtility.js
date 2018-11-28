@@ -102,6 +102,10 @@ function linkCameras(conGraph, ocdGraph) {
         moveCamera(event.target.object, ocdGraph, conGraph.cameraPosition().lookat);
     })
 
+    ocdGraph.controls().addEventListener('change', event =>{
+        moveCamera(event.target.object, conGraph, ocdGraph.cameraPosition().lookat);
+    })
+
 }
 
 function moveCamera(event, graph, lookat) {
@@ -110,6 +114,23 @@ function moveCamera(event, graph, lookat) {
         y: event.position.y,
         z: event.position.z
     }, lookat)
+}
+
+async function colorByOribtControl(orbitId, graphList, maxValues){
+    console.log(orbitId);
+    if(orbitId > 72 || orbitId < 0){
+        alert('No data for those orbit counts');
+    } else {
+        //using orbit frequency coloring - set this for the node labels
+        ORBIT_COLORING = orbitId;
+
+        //color by orbit frequency
+        colorByOrbit(orbitId, graphList, maxValues);
+        generateScaleNumbers(maxValues.orbits[orbitId]);
+
+        showScale(); //showscale
+        updateGraph(graphList);
+    }
 }
 
 /**
@@ -145,6 +166,10 @@ function colorNodeBy(colorIndex, graphs, maxValues) {
 
     //update graphs colors
     updateGraph(graphs);
+
+    //set this to null so we know that we are no longer coloring by orbit frequency, which
+    // turns off the labels as well as disables arrow functionality
+    ORBIT_COLORING = null;
 }
 
 /**

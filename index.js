@@ -33,6 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    var modalElem = document.querySelectorAll('.modal');
+    var modal = M.Modal.init(modalElem, {
+        dismissible: true,
+        opacity: 0
+    });
+
+
     //grab the title bars for each graph to be revealed later
     var ocdTitle = document.getElementById('ocd-title');
     var conTitle = document.getElementById('con-title');
@@ -46,10 +53,11 @@ document.addEventListener("DOMContentLoaded", function () {
     file_data.con.container = conContainer;
     file_data.ocd.container = ocdContainer;
 
+    //init both sytoscape graphs
     conCy = cytoscape({
         container: document.getElementById('conCy')
     });
-    conCy.linked = false;
+    conCy.linked = false; //not linked means that the graph has not been connected to the 3D graph
 
     ocdCy = cytoscape({
         container: document.getElementById('ocdCy')
@@ -227,9 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if(colorIndex !== 'orbit_frequency'){
             colorNodeBy(colorIndex, graphList, maxValues);
             document.getElementById('orbit-input').classList.add('hide');
-
-            //turn off notation for current node count
-            ORBIT_COLORING = -1;
         } else {
             //if asking to color by orbit frequency, require additional information
             document.getElementById('orbit-input').classList.remove('hide');
@@ -250,19 +255,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('color-by-orbit').addEventListener('click', event =>{
         let orbitId = document.getElementById('orbit-number').value;
-        if(orbitId > 72 || orbitId < 0){
-            alert('No data for those orbit counts');
-        } else {
-            //using orbit frequency coloring - set this for the node labels
-            ORBIT_COLORING = orbitId;
+        colorByOribtControl(orbitId, graphList, maxValues);
+    })
 
-            //color by orbit frequency
-            colorByOrbit(orbitId, graphList, maxValues);
-            generateScaleNumbers(maxValues.orbits[orbitId]);
+    document.addEventListener('keydown', function(event){
+        let code = event.keyCode;
+        switch(code){
+            case 32:  //space
+                handleModal(modal);
+                break
+            case 39:  //right arrow
+                handleArrow(graphList, maxValues, ORBIT_COLORING, 'right');
+                break;
+            case 37:  // left arrow
+                handleArrow(graphList, maxValues, ORBIT_COLORING, 'left');
+                break;
+            default:
+                break;
+        }
+        
+    } );
 
-            showScale(); //showscale
-            updateGraph(graphList);
+    document.getElementById('orbit-modal-text').addEventListener('keyup', event =>{
+        if(event.keyCode === 13){
+            //run color by code
+            var elems = document.getElementById('modal1');
+            var modal = M.Modal.getInstance(elems);
+
+            let orbitId = document.getElementById('orbit-modal-text').value;
+            colorByOribtControl(Number(orbitId), graphList, maxValues);
+            modal.close();
         }
     })
 
 })
+
+async function handleModal(modal){
+    var elems = document.getElementById('modal1');
+    var modal = M.Modal.getInstance(elems);
+
+    if(!modal.isOpen){
+        modal.open();
+        var textBox = document.getElementById('orbit-modal-text');
+        textBox.value = '';
+        textBox.focus();
+    } else {
+        modal.close();
+    }
+}
+
+async function handleArrow(graphList, maxValues, currentOrbitId, arrow){
+    debugger;
+    if(currentOrbitId == null){
+        //not currently colored by orbits - start at 0
+        colorByOribtControl(0, graphList, maxValues);
+    } else if(arrow == 'right'){
+        //increment orbit id and color by that
+        colorByOribtControl(currentOrbitId + 1, graphList, maxValues);
+    } else if (arrow == 'left'){
+        //decrement orbit id and color by that
+        colorByOribtControl(currentOrbitId - 1, graphList, maxValues);
+    }
+}

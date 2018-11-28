@@ -95,3 +95,7 @@ ul:not(.browser-default){
     padding: 0 10px 0 10px;
 
 }
+
+.modal{
+    height: 10%;
+}
