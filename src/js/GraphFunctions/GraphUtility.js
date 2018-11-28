@@ -127,6 +127,7 @@ async function colorByOribtControl(orbitId, graphList, maxValues){
         //color by orbit frequency
         colorByOrbit(orbitId, graphList, maxValues);
         generateScaleNumbers(maxValues.orbits[orbitId]);
+        document.getElementById('scale-label').innerText = `Orbit: ${orbitId}`;
 
         showScale(); //showscale
         updateGraph(graphList);
@@ -146,18 +147,22 @@ function colorNodeBy(colorIndex, graphs, maxValues) {
         case 'degree':
             colorByDegree(graphs, maxValues);
             generateScaleNumbers(maxValues.degree);
+            document.getElementById('scale-label').innerText = `Degree`;
             break
         case 'strength':
             colorByStrength(graphs, maxValues);
             generateScaleNumbers(maxValues.strength);
+            document.getElementById('scale-label').innerText = `Node Strength`;
             break;
         case 'degree_centrality':
             colorByDegreeCentrality(graphs, maxValues);
             generateScaleNumbers(maxValues.degreeCentrality);
+            document.getElementById('scale-label').innerText = `Degree Centrality`;
             break;
         case 'betweenness_centrality':
             colorByBetweennessCentrality(graphs, maxValues);
             generateScaleNumbers(maxValues.betweennessCentrality);
+            document.getElementById('scale-label').innerText = `Betweenness Centrality`;
             break;
         default:
             colorByBase(graphs);
