@@ -65,8 +65,6 @@ function deselectAll(graphs) {
             }
         })
     }
-
-
 }
 
 /**
@@ -91,6 +89,12 @@ function focusNode(nodeId, graph, cy) {
     );
 }
 
+/**
+ * Links two cameras from two separate instances of 3d-force-graph so that moving the camera in one
+ * moves the camera in the other. 
+ * @param {3d-force-graph} conGraph 3d-force-graph object for the control brain
+ * @param {3d-force-graph} ocdGraph 3d-force-graph object for the ocd brain
+ */
 function linkCameras(conGraph, ocdGraph) {
     //link con to ocd
     ocdGraph.camera().matrix = conGraph.camera().matrix;
@@ -108,6 +112,12 @@ function linkCameras(conGraph, ocdGraph) {
 
 }
 
+/**
+ * 
+ * @param {event} event a change event from movement of a camera within the graph
+ * @param {3d-force-graph} graph 3d-force-graph object of which camera to move
+ * @param {object} lookat an object containing the 
+ */
 function moveCamera(event, graph, lookat) {
     graph.cameraPosition({
         x: event.position.x,
@@ -116,6 +126,12 @@ function moveCamera(event, graph, lookat) {
     }, lookat)
 }
 
+/**
+ * 
+ * @param {*} orbitId 
+ * @param {*} graphList 
+ * @param {*} maxValues 
+ */
 async function colorByOribtControl(orbitId, graphList, maxValues){
     console.log(orbitId);
     if(orbitId > 72 || orbitId < 0){

@@ -68,7 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let fileInputs = document.getElementsByClassName('file-input');
     for (i = 0; i < fileInputs.length; i++) {
         fileInputs[i].addEventListener('change', (event) => {
-
             //get button that was clicked
             let data_name = event.target.name;
             let target = data_name.slice(0, 3);
@@ -83,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let fileList = event.target.files;
                 parseMultiple(fileList, data_name, target);
             }
-
+            
         })
     }
 
