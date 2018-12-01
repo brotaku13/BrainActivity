@@ -1,0 +1,85 @@
+{
+    "color":{
+        "node":{
+            "base": "rgb(64, 196, 255)",
+            "fade": "rgba(64, 196, 255, 0.4)"
+        },
+        "edge":{
+            "base":"rgb(255, 255, 255)",
+            "fade":"rgba(207, 216, 220, 0.3)"
+        }
+    },
+    "scale":{
+        "edge": 1,
+        "node": 50,
+        "particles": 3
+    },
+    "spacingScale": 15,
+    "particleSpeed": 0.001,
+    "particleResolution": 10,
+    "nodeResolution": 30,
+    "filepaths":{
+        "graphDataPaths": [{
+                "target": "con",
+                "name": "weight_matrix",
+                "path": "Data/CON/con_17_mean_mat.txt"
+            },
+            {
+                "target": "con",
+                "name": "coordinates",
+                "path": "Data/CON/CON_region_centers_mm_coords_group_mean_3x200.txt"
+            },
+            {
+                "target": "con",
+                "name": "edge_list",
+                "path": "Data/CON/con_17_el"
+            },
+            {
+                "target": "con",
+                "name": "node_names",
+                "path": "Data/CON/CON_region_names_group_mean_1x200"
+            },
+            {
+                "target": "con",
+                "name": "node_ids",
+                "path": "Data/CON/CON_region_names_abbrev_group_mean_1x200.txt"
+            },
+            {
+                "target": "con",
+                "name": "orbits",
+                "path": "Data/CON/orca_con_17_el"
+            },
+            {
+                "target": "ocd",
+                "name": "weight_matrix",
+                "path": "Data/OCD/ocd_19_mean_mat.txt"
+            },
+            {
+                "target": "ocd",
+                "name": "coordinates",
+                "path": "Data/OCD/OCD_region_centers_mm_coords_group_mean_3x200.txt"
+            },
+            {
+                "target": "ocd",
+                "name": "edge_list",
+                "path": "Data/OCD/ocd_19_el"
+            },
+            {
+                "target": "ocd",
+                "name": "node_names",
+                "path": "Data/OCD/OCD_region_names_group_mean_1x200"
+            },
+            {
+                "target": "ocd",
+                "name": "node_ids",
+                "path": "Data/OCD/OCD_region_names_abbrev_group_mean_1x200.txt"
+            },
+            {
+                "target": "ocd",
+                "name": "orbits",
+                "path": "Data/OCD/orca_ocd_19_el"
+            }
+        ],
+        "config": "src/config/config.json"
+    }
+}

@@ -1,31 +1,43 @@
-//controls the spacing between coordinates. Scaled up to allow for a more 
-// spread out look while keeping the same ratio distances
-const SPACING_SCALE = 15;
 
-//colors of uncolored nodes. 
-const BASE_NODE_COLOR = 'rgb(64,196,255)';
-const BASE_EDGE_COLOR = 'rgb(255, 255, 255)';
+function buildGraphsController(){
+    return Promise.all([
+        //load in both graphs
+        createGraph('con', document.getElementById('con-3d-graph')),
+        createGraph('ocd', document.getElementById('ocd-3d-graph'))
+    ]).then(()=>{
+        //link the cameras
+        linkCameras(GRAPH_DATA.graphList);
+    }).then(()=>{
+        //enable menu button
 
-//colors of nodes which have not been selected
-const NODE_FADE = 'rgba(207, 216, 220, 0.2)';
-const EDGE_FADE = 'rgba(207, 216, 220, 0.2)';
+        //show tutorial
+    })
+}
 
-//scaling factor for edge and node size
-var EDGE_SCALE = 1;
-var NODE_SCALE = 1
+function createGraph(graphName, container){
+    return new Promise((resolve, reject) =>{
+        //remove hidden quality
+        GRAPH_DATA[graphName].container.classList.remove('hide');
+        GRAPH_DATA[graphName].titlebar.classList.remove('hide');
 
-//Control wether particles and edge weights are shown
-var PARTICLES = false;
-var EDGE_WEIGHT = false;
+        //get new size of container
+        let dim = GRAPH_DATA[graphName].container.getBoundingClientRect();
 
-//use to tell if the graph should display orbit frequency
-var ORBIT_COLORING = null
+        //create the 3D-Graph Object and resize it to fit container
+        
+        let graph = ForceGraph3D();
+        graph(container).width(dim.width).height(dim.height);
+        GRAPH_DATA[graphName].graph = graph
 
-//managed which nodes are highlighted
-var highlightedNode = null;
+        //add in elements and build features
+        let elements = createGraphElements(GRAPH_DATA[graphName]);
+        buildGraph(GRAPH_DATA[graphName].graph, GRAPH_DATA[graphName].cy, elements, GRAPH_DATA.graphList)
 
-var nodeListGenerated = false;
-
+        //add graph to graphList
+        GRAPH_DATA.graphList.push({graph: GRAPH_DATA[graphName].graph, cy: GRAPH_DATA[graphName].cy});
+        resolve()
+    })
+}
 
 /**
  * creates the graph elements from the data loaded in from the file. Requires
@@ -44,11 +56,11 @@ function createGraphElements(group_data){
         node_list.push({
             name: node_name,
             id: id - 1,
-            fx: coordinates[0] * SPACING_SCALE,
-            fy: coordinates[1] * SPACING_SCALE,
-            fz: coordinates[2] * SPACING_SCALE,
+            fx: coordinates[0] * config.spacingScale,
+            fy: coordinates[1] * config.spacingScale,
+            fz: coordinates[2] * config.spacingScale,
             orbits: group_data.orbits ? group_data.orbits[i] : [],
-            color: '#40C4FF',
+            color: config.color.node.base,
             selected: true,
             scaledColor: {orbits:{}}
         })
@@ -63,7 +75,7 @@ function createGraphElements(group_data){
             source: edge[0],
             target: edge[1],
             value: group_data.weight_matrix[edge[0]][edge[1]],
-            color: BASE_EDGE_COLOR,
+            color: config.color.edge.base,
             selected: true
         })
     }
@@ -78,14 +90,14 @@ function createGraphElements(group_data){
  * @param {3D-Force-graph} Graph Graph object from the 3d-force-graph library
  * @param {object} graph_elements Object containing all of the nodes and edges for the graph to be created
  */
-function buildGraph(graph, cy, graph_elements, graphs){
+function buildGraph(graph, cy, graph_elements, graphList){
     
     //load in data
     graph.graphData(graph_elements)
 
     //node functions
     .nodeVal(()=>{
-        return 50 * NODE_SCALE;
+        return config.scale.node * GRAPH_DATA.nodeSize;
     })
     .nodeLabel((node)=>{
         //node label is a composite of all of the calculations that have been made on the node
@@ -102,8 +114,8 @@ function buildGraph(graph, cy, graph_elements, graphs){
         if(node.betweennessCentrality !== undefined){
             name += `<div>Betweenness Centrality: ${node.betweennessCentrality}</div>`;
         }
-        if(ORBIT_COLORING != null){
-            name += `<div>Orbit ${ORBIT_COLORING} Frequency: ${node.orbits[ORBIT_COLORING]}</div>`
+        if(GRAPH_DATA.orbitColoring != null){
+            name += `<div>Orbit ${GRAPH_DATA.orbitColoring} Frequency: ${node.orbits[GRAPH_DATA.orbitColoring]}</div>`
         }
         return name;
     })
@@ -111,21 +123,21 @@ function buildGraph(graph, cy, graph_elements, graphs){
         if(node.selected){
             return node.color            
         } else {
-            return NODE_FADE;
+            return config.color.node.fade;
         }
     })
-    .nodeResolution(30)
+    .nodeResolution(config.nodeResolution)
     .enableNodeDrag(false)
     .onNodeClick(node =>{
-        if(node.id === highlightedNode){
-            highlightedNode = null;
-            deselectAll(graphs);
+        if(node.id === GRAPH_DATA.highlightedNode){
+            GRAPH_DATA.highlightedNode = null;
+            deselectAll(graphList);
         } else {
-            highlightedNode = node.id;
-            deselectAll(graphs);
-            highlightNeighbors(node.id, graphs);
+            GRAPH_DATA.highlightedNode = node.id;
+            deselectAll(graphList);
+            highlightNeighbors(node.id, graphList);
         }
-        updateGraph(graphs);
+        updateGraph(graphList);
     })
     
     //edge functions
@@ -133,27 +145,27 @@ function buildGraph(graph, cy, graph_elements, graphs){
         if(edge.selected){
             return edge.color;
         } else {
-            return EDGE_FADE;
+            return config.color.edge.fade;
         }
 
     })
     .linkDirectionalParticles(edge => {
-        if(PARTICLES && edge.selected){
+        if(GRAPH_DATA.particles && edge.selected){
             return edge.value;
         } else {
             return 0
         }
     })
     .linkDirectionalParticleSpeed(edge =>{
-        return edge.value * .001;
+        return edge.value * config.particleSpeed;
     })
     .linkDirectionalParticleWidth(edge =>{
-        return 3 * EDGE_SCALE
+        return config.scale.particles * GRAPH_DATA.edgeSize;
     })
-    .linkDirectionalParticleResolution(5)
+    .linkDirectionalParticleResolution(config.particleResolution)
     .linkWidth( edge =>{
-        if(EDGE_WEIGHT && edge.selected){
-            return edge.value * EDGE_SCALE;
+        if(GRAPH_DATA.edgeWeightToggled && edge.selected){
+            return edge.value * GRAPH_DATA.edgeSize;
         } else {
             return 0;
         }
@@ -185,7 +197,7 @@ function linkToCytoscape(cy, graph){
             data: {
                 id: String(node.id),
                 name: node.name,
-                color: BASE_NODE_COLOR,
+                color: config.color.node.base,
                 nodeLink: node,
                 orbits: node.orbits,
             }
@@ -198,7 +210,7 @@ function linkToCytoscape(cy, graph){
             group: 'edges',
             data: {
                 id: 'Edge' + String(edge.index),
-                color: BASE_EDGE_COLOR,
+                color: config.color.edge.base,
                 source: String(edge.source.id),
                 target: String(edge.target.id),
                 weight: edge.value,
@@ -214,9 +226,8 @@ function linkToCytoscape(cy, graph){
     cy.add(cyEdges);
 
     //set pick list values for the Focus Node picklist.
-    if(!nodeListGenerated){
-        nodeListGenerated = true;
+    if(!GRAPH_DATA.nodeListgenerated){
+        GRAPH_DATA.nodeListgenerated = true;
         generateNodeList(cy);
     }
-    
 }

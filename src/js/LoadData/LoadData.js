@@ -1,11 +1,56 @@
-var regex = [
-    ['weight_matrix', /.*mean_mat.*/],
-    ['coordinates', /.*coords.*/],
-    ['edge_list', /.*_el/],
-    ['node_names', /.*names_group.*/],
-    ['node_ids', /.*names_abbrev.*/],
-    ['orbits', /.*orca.*/],
-]
+
+
+function loadDataController() {
+
+    //load in and create config data
+    makeRequest('get', 'src/config/config.json')
+    .then((configFile) =>{
+        config = JSON.parse(configFile);
+        return config
+    })
+    .catch((error) =>{
+        alert('Error Loading Config File!')
+        console.log(error)
+    }).then((config)=>{
+        //load in all of the graph data asyncronously
+        return Promise.all(config.filepaths.graphDataPaths.map(pathObject =>{
+            return makeRequest('GET', pathObject.path).then(file =>{
+                parseCSV(file, pathObject.name, pathObject.target);
+            }).catch((error)=>{
+                alert('Error Loading Data!')
+                console.log(error)
+            })
+        }))
+    }).then(()=>{
+        //build the graphs from GRAPH_DATA
+        console.log(GRAPH_DATA);
+        buildGraphsController();
+    })
+}
+
+function makeRequest(method, filepath) {
+    return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open(method, filepath);
+        xhr.onload = function () {
+            if (this.status >= 200 && this.status < 300) {
+                resolve(xhr.response);
+            } else {
+                reject({
+                    status: this.status,
+                    statusText: xhr.statusText
+                });
+            }
+        };
+        xhr.onerror = function () {
+            reject({
+                status: this.status,
+                statusText: xhr.statusText
+            });
+        };
+        xhr.send();
+    });
+}
 
 function parseCSV(inputFile, data_name, target) {
     let delimiter = ' '
@@ -19,9 +64,12 @@ function parseCSV(inputFile, data_name, target) {
         complete: function (results, file) {
             console.log("parsing complete: \n", results.data)
             if (data_name == 'weight_matrix') {
-                cleanMatrix(results.data)
+                results.data.forEach(row => {
+                    row.shift();
+                })
+
             }
-            confirmLoad(results.data, data_name, target);
+            GRAPH_DATA[target][data_name] = results.data;
         },
         dynamicTyping: true,
         skipEmptyLines: true,
@@ -29,39 +77,5 @@ function parseCSV(inputFile, data_name, target) {
             return item.trim();
         },
         skipEmptyLines: true
-    })
-}
-
-function parseMultiple(fileList, data_name, group) {
-    let num_files = fileList.length;
-    console.log(fileList);
-
-    let fileNames = Object.values(fileList).map((file) => {
-        return file.name;
-    })
-
-    //search for files by datatype
-    for (i = 0; i < regex.length; i++) {
-
-        for (j = 0; j < num_files; j++) {
-            if (fileNames[j].search(regex[i][1]) !== -1) {
-                console.log(regex[i], fileList[j]);
-                parseCSV(fileList[j], regex[i][0], group);
-            }
-        }
-    }
-}
-
-function confirmLoad(data, data_name, group) {
-    file_data[group][data_name] = data;
-    let icon = document.getElementById(group + '_' + data_name + '_icon');
-    if (icon) {
-        icon.innerHTML = 'check';
-    }
-}
-
-function cleanMatrix(data) {
-    data.forEach(row => {
-        row.shift();
     })
 }

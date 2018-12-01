@@ -95,7 +95,10 @@ function focusNode(nodeId, graph, cy) {
  * @param {3d-force-graph} conGraph 3d-force-graph object for the control brain
  * @param {3d-force-graph} ocdGraph 3d-force-graph object for the ocd brain
  */
-function linkCameras(conGraph, ocdGraph) {
+function linkCameras(graphList) {
+    let ocdGraph = graphList[0].graph;
+    let conGraph = graphList[1].graph;
+
     //link con to ocd
     ocdGraph.camera().matrix = conGraph.camera().matrix;
     ocdGraph.camera().rotation = conGraph.camera().rotation;
