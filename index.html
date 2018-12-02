@@ -1,0 +1,142 @@
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.min.js"></script>
+    <script src="https://unpkg.com/3d-force-graph"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.20/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.4.0/chroma.min.js"></script>
+
+    <link rel="stylesheet" href="./src/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!--Materialize CSS Libraries-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+
+    <script src="./src/js/GraphFunctions/BuildGraph.js"></script>
+    <script src="./src/js/LoadData/LoadData.js"></script>
+    <script src="./src/js/HTMLGen/HTMLFunctions.js"></script>
+    <script src="./src/js/GraphFunctions/GraphUtility.js"></script>
+
+    <script src="./src/js/index.js"></script>
+
+</head>
+
+<body>
+    <a class="btn modal-trigger hide" id="modal-trigger" href="#modal1">Modal</a>
+    <div id="modal1" class="modal">
+        <div class="container">
+            <div class="row slim-row">
+                <div class="col s12">
+                    Enter an orbit between 0 and 72:
+                    <div class="input-field inline">
+                        <input id="orbit-modal-text" type="text">
+                        <label for="orbit-modal-text">Orbit</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul id="slide-out" class="sidenav">
+        <div class="col s2 sidebar-container">
+            <div class="row slim-row left-align">
+                <label>
+                    <input type="checkbox" class="filled-in" id="toggle-particles" />
+                    <span>Toggle Particles</span>
+                </label>
+            </div>
+
+            <div class="row slim-row left-align">
+                <label>
+                    <input type="checkbox" class="filled-in" id="toggle-edge-weights" />
+                    <span>Toggle Edge Weights</span>
+                </label>
+            </div>
+            <div class="row">
+                <span>Scale Edge Size</span>
+                <p class="range-field scale-slider">
+                    <input type="range" id="edge-size" min="1" max="10" value="1" />
+                </p>
+            </div>
+            <div class="row">
+                <span>Scale Node Size</span>
+                <p class="range-field scale-slider">
+                    <input type="range" id="node-size" min="1" max="10" value="1" />
+                </p>
+            </div>
+            <div class="input-field row dropdown-wrapper">
+                <select id="color-by-dropdown" class="">
+                    <option value="no_color" selected>No Color</option>
+                    <option value="degree">Degree</option>
+                    <option value="orbit_frequency">Orbit Frequency</option>
+                    <option value="strength">Strength</option>
+                    <option value="degree_centrality">Degree Centrality</option>
+                    <option value="betweenness_centrality">Betweenness Centrality</option>
+                </select>
+                <label class="dropdown-wrapper">Color Nodes By</label>
+            </div>
+            <div class="row dropdown-wrapper hide" id="orbit-input">
+                <div class="input-field col s6">
+                    <input id="orbit-number" type="text">
+                    <label for="orbit-number">Orbit (0-72)</label>
+                </div>
+                <div class="col s6">
+                    <button class="btn waves-effect waves-light light-blue darken-2" id="color-by-orbit">Go
+                        <i class="material-icons right">timeline</i>
+                    </button>
+                </div>
+            </div>
+            <div class="input-field row dropdown-wrapper">
+                <select id="nodeList" class="">
+                    <option value="" disabled selected>Choose Node</option>
+                </select>
+                <label class="dropdown-wrapper">Focus Node</label>
+            </div>
+        </div>
+    </ul>
+    <div>
+
+        <div class="row hide scale" id="color-scale">
+            <div class="col s12">
+                <div class="row slim-row left-align">
+                    <span class="white-text" id="scale-label"></span>    
+                </div>
+                <div class="row">
+                    <div class="col s2" id="scale-color-container">
+                    </div>
+                    <div class="col s10" id="scale-numbers">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="cy-container" id="ocdCy"></div>
+    <div class="cy-container" id="conCy"></div>
+    <div class="row app-container" id="app-container">
+        <div class="row titlebar black">
+            <div class="col s6 hide" id="con-title">
+                <span class="title">
+                    Control
+                </span>
+            </div>
+            <div class="col s6 hide" id="ocd-title">
+                <span class="title">
+                    OCD
+                </span>
+            </div>
+            <a href="#" data-target="slide-out" class="sidenav-trigger menu-button"><i class="material-icons">menu</i></a>
+        </div>
+        <div class="col s6 graph-container hide" id="con-graph-container">
+            <div id="con-3d-graph"></div>
+        </div>
+        <div class="col s6 graph-container hide" id="ocd-graph-container">
+            <div id="ocd-3d-graph"></div>
+        </div>
+    </div>
+    <div class="scale hide" id="color-scale">
+
+    </div>
+</body>
