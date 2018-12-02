@@ -126,10 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 handleModal(modal);
                 break
             case 39:  //right arrow
-                handleArrow(GRAPH_DATA.graphList, GRAPH_DATA.maxValues, ORBIT_COLORING, 'right');
+                handleArrow(GRAPH_DATA.graphList, GRAPH_DATA.maxValues, GRAPH_DATA.orbitColoring, 'right');
                 break;
             case 37:  // left arrow
-                handleArrow(GRAPH_DATA.graphList, GRAPH_DATA.maxValues, ORBIT_COLORING, 'left');
+                handleArrow(GRAPH_DATA.graphList, GRAPH_DATA.maxValues, GRAPH_DATA.orbitColoring, 'left');
                 break;
             default:
                 break;
@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('orbit-modal-text').addEventListener('keyup', event =>{
         if(event.keyCode === 13){
             //run color by code
-            var elems = document.getElementById('modal1');
+            var elems = document.getElementById('orbit-modal');
             var modal = M.Modal.getInstance(elems);
-
+            debugger;
             let orbitId = document.getElementById('orbit-modal-text').value;
             colorByOribtControl(Number(orbitId), GRAPH_DATA.graphList, GRAPH_DATA.maxValues);
             modal.close();
@@ -166,6 +166,7 @@ async function handleModal(modal){
 }
 
 async function handleArrow(graphList, maxValues, currentOrbitId, arrow){
+    debugger;
     if(currentOrbitId == null){
         //not currently colored by orbits - start at 0
         colorByOribtControl(0, graphList, maxValues);

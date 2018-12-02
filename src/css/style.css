@@ -81,7 +81,8 @@ ul:not(.browser-default){
 }
 
 .scale{
-    
+    position: absolute;
+    bottom: 0;
     z-index: 3;
     width: 300px;
 }

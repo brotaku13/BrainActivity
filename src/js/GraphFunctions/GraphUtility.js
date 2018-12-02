@@ -141,7 +141,7 @@ async function colorByOribtControl(orbitId, graphList, maxValues){
         alert('No data for those orbit counts');
     } else {
         //using orbit frequency coloring - set this for the node labels
-        ORBIT_COLORING = orbitId;
+        GRAPH_DATA.orbitColoring = orbitId;
 
         //color by orbit frequency
         colorByOrbit(orbitId, graphList, maxValues);
@@ -193,7 +193,7 @@ function colorNodeBy(colorIndex, graphs, maxValues) {
 
     //set this to null so we know that we are no longer coloring by orbit frequency, which
     // turns off the labels as well as disables arrow functionality
-    ORBIT_COLORING = null;
+    GRAPH_DATA.orbitColoring = null;
 }
 
 /**
