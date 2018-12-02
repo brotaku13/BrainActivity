@@ -26,7 +26,7 @@
 
 <body>
     <a class="btn modal-trigger hide" id="modal-trigger" href="#modal1">Modal</a>
-    <div id="modal1" class="modal">
+    <div id="orbit-modal" class="modal smallmodal">
         <div class="container">
             <div class="row slim-row">
                 <div class="col s12">
@@ -37,6 +37,152 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <a class="btn modal-trigger hide" id="modal-trigger" href="#browser-modal">Modal</a>
+    <div id="browser-modal" class="modal">
+        <div class="modal-content">
+            <h6>Please Switch Browsers</h6>
+            <p>It appears as if you are not using a Chrome browser. This application was
+                only built and tested in chrome. Using other browsers may have an adverse
+                affect on the application's performance, please consider switching to Chrome instead.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+        </div>
+    </div>
+    <a class="btn modal-trigger hide" id="modal-trigger" href="#browser-modal">Modal</a>
+    <div id="tutorial-modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h2>Visualizing Graphlets in the Brain</h2>
+            <div class="container">
+                <div class="row left-align">
+                    <h4>What is this?</h4>
+                    <p>
+                        This application visualizes research done in the area of brain topology mapping.
+                    </p>
+                    <p>
+                        Displayed are two topological abstractions of the human brain, each with exactly 200 nodes
+                        representing
+                        different geographic regions in the brain. The right brain is the control group, while the left
+                        brain is the
+                        OCD group. Both brains were derived from a resting state.
+                    </p>
+                    <p>
+                        This tool makes use of the research done by Sridevi Kamla Maharaj and visualizes different
+                        graph
+                        theoretical
+                        aspects of the human brain as seen in OCD and non-OCD children. Namely, the model is concerned
+                        with
+                        graphlets and the
+                        frequency in which nodes take part as a member of an orbit in each graphlet.
+                    </p>
+                </div>
+                <div class="row left-align">
+                    <h4>How to Use</h4>
+                    <div class="col s12">
+                        <div class="row">
+                            <div class="col s2">
+                                <p>
+                                    <i class="medium material-icons">adjust</i>
+                                </p>
+                                
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    You may click on any node to reveal that node's neighbors. Clicking on the same
+                                    node
+                                    deselects the node
+                                    and returns the graph to its original state.
+                                </p>
+                                <p>
+                                    Dragging either graph will move and rotate it.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s2 left-align">
+                                <p>
+                                    <i class="medium material-icons">menu</i>
+                                </p>
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    Open the menu by clicking the menu icon in the upper right hand corner. The menu
+                                    provides a
+                                    suite of
+                                    tools to alter and change the graph's visualization.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s2 left-align">
+                                <p>
+                                    <i class="medium material-icons">space_bar</i>
+                                </p>
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    Tapping the spacebar brings up the quick navigation for coloring the nodes by orbit
+                                    frequency.
+                                    Just enter the orbit you would like to see and press enter. Tapping the space bar a
+                                    second time closes the window
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s2 left-align">
+                                <p>
+                                    <i class="small material-icons">arrow_back</i>
+                                    <i class="small material-icons">arrow_forward</i>
+                                </p>
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    In order to facilitate the quick exploration of orbit frequencies, you may use the
+                                    back and forward
+                                    arrow to increment or decrement the orbit id. The orbits range from orbit 0, to
+                                    orbit 72.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row left-align">
+                    <h4>Developers</h4>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col s2">
+                                <p>
+                                    <i class="medium material-icons">code</i>
+                                </p>
+                                
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    This application was developed by Brian Caulfield of The University of California, Irvine.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s2">
+                                <p>
+                                    <i class="medium material-icons">import_contacts</i>
+                                </p>
+                            </div>
+                            <div class="col s10">
+                                <p>
+                                    Research was done by Sridevi Kamla Maharaj of the University of California, Irvine.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
         </div>
     </div>
     <ul id="slide-out" class="sidenav">
@@ -101,7 +247,7 @@
         <div class="row hide scale" id="color-scale">
             <div class="col s12">
                 <div class="row slim-row left-align">
-                    <span class="white-text" id="scale-label"></span>    
+                    <span class="white-text" id="scale-label"></span>
                 </div>
                 <div class="row">
                     <div class="col s2" id="scale-color-container">

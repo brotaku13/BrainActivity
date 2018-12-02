@@ -106,11 +106,11 @@ function linkCameras(graphList) {
     ocdGraph.camera().up = conGraph.camera().up;
 
     conGraph.controls().addEventListener('change', event => {
-        moveCamera(event.target.object, ocdGraph, conGraph.cameraPosition().lookat);
+        moveCamera(event.target.object.position, ocdGraph, conGraph.cameraPosition().lookat);
     })
 
     ocdGraph.controls().addEventListener('change', event =>{
-        moveCamera(event.target.object, conGraph, ocdGraph.cameraPosition().lookat);
+        moveCamera(event.target.object.position, conGraph, ocdGraph.cameraPosition().lookat);
     })
 
 }
@@ -121,11 +121,11 @@ function linkCameras(graphList) {
  * @param {3d-force-graph} graph 3d-force-graph object of which camera to move
  * @param {object} lookat an object containing the 
  */
-function moveCamera(event, graph, lookat) {
+function moveCamera(position, graph, lookat) {
     graph.cameraPosition({
-        x: event.position.x,
-        y: event.position.y,
-        z: event.position.z
+        x: position.x,
+        y: position.y,
+        z: position.z
     }, lookat)
 }
 

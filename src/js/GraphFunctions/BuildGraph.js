@@ -8,9 +8,21 @@ function buildGraphsController(){
         //link the cameras
         linkCameras(GRAPH_DATA.graphList);
     }).then(()=>{
+        moveCamera({
+            x:3483.2716478988627,
+            y:519.0993746047867,
+            z:-341.59668085257516
+        }, GRAPH_DATA.ocd.graph, {
+            x: 2498.814685349418,
+            y: 372.38931428175607,
+            z:-245.05318242862967
+        })
+    })
+    .then(()=>{
         //enable menu button
 
         //show tutorial
+
     })
 }
 

@@ -28,6 +28,7 @@ var GRAPH_DATA = {
 var config = undefined;
 
 document.addEventListener("DOMContentLoaded", function () {
+    
 
     //init dropdown fields
     var elem = document.getElementById('color-by-dropdown');
@@ -47,6 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
         opacity: 0
     });
 
+    //check browser type
+    browserAlert();
+    showTutorial();
+
 
     //grab the title bars for each graph to be revealed later
     GRAPH_DATA.ocd.titlebar  = document.getElementById('ocd-title');
@@ -59,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     GRAPH_DATA.con.container = document.getElementById('con-graph-container');
     GRAPH_DATA.ocd.container = document.getElementById('ocd-graph-container');
 
-    //init both sytoscape graphs
+    //init both cytoscape graphs
     ['ocd', 'con'].forEach(name =>{
         GRAPH_DATA[name].cy = cytoscape({
             container: document.getElementById(name + 'Cy')
@@ -147,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 async function handleModal(modal){
-    var elems = document.getElementById('modal1');
+    var elems = document.getElementById('orbit-modal');
     var modal = M.Modal.getInstance(elems);
 
     if(!modal.isOpen){
@@ -171,4 +176,55 @@ async function handleArrow(graphList, maxValues, currentOrbitId, arrow){
         //decrement orbit id and color by that
         colorByOribtControl(currentOrbitId - 1, graphList, maxValues);
     }
+}
+
+async function browserAlert(){
+    if(browser() !== 'Chrome'){
+        var elems = document.getElementById('browser-modal');
+        var modal = M.Modal.getInstance(elems);
+        modal.open();
+    }
+}   
+
+async function showTutorial(){
+    var elems = document.getElementById('tutorial-modal');
+    var modal = M.Modal.getInstance(elems);
+    modal.open();
+}
+
+function browser() {
+    // Return cached result if avalible, else get result then cache it.
+    if (browser.prototype._cachedResult)
+        return browser.prototype._cachedResult;
+
+    // Opera 8.0+
+    var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+    // Firefox 1.0+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+    // Internet Explorer 6-11
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+    // Edge 20+
+    var isEdge = !isIE && !!window.StyleMedia;
+
+    // Chrome 1+
+    var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+    // Blink engine detection
+    var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+    return browser.prototype._cachedResult =
+        isOpera ? 'Opera' :
+        isFirefox ? 'Firefox' :
+        isSafari ? 'Safari' :
+        isChrome ? 'Chrome' :
+        isIE ? 'IE' :
+        isEdge ? 'Edge' :
+        isBlink ? 'Blink' :
+        "Don't know";
 }
