@@ -11,10 +11,10 @@
     },
     "scale":{
         "edge": 1,
-        "node": 50,
+        "node": 0.15,
         "particles": 3
     },
-    "spacingScale": 15,
+    "spacingScale": 1,
     "particleSpeed": 0.001,
     "particleResolution": 10,
     "nodeResolution": 30,

@@ -441,3 +441,10 @@ function getColor(current, max) {
 function max(a, b) {
     return a > b ? a : b;
 }
+
+async function changeGridScale(newScale){
+    [GRAPH_DATA.ocd, GRAPH_DATA.con].forEach(graph =>{
+        removeGrids(graph.graph, graph.name);
+        addGrids([], newScale, graph.graph, graph.name)
+    })
+}

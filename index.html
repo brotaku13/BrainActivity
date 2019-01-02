@@ -14,6 +14,7 @@
     <script src="https://unpkg.com/3d-force-graph"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.20/cytoscape.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.4.0/chroma.min.js"></script>
+    <script src="//unpkg.com/three"></script>
 
     <link rel="stylesheet" href="./src/css/style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -223,6 +224,35 @@
                     <input type="range" id="node-size" min="1" max="10" value="1" />
                 </p>
             </div>
+            <div class="row slim-row left-align">
+                <span>Coordinate System</span>
+                <div>
+                    <label>
+                        <input type="checkbox" class="filled-in toggle-plane" id="xy-plane" checked/>
+                        <span>XY Plane</span>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="checkbox" class="filled-in toggle-plane" id="xz-plane" checked/>
+                        <span>XZ Plane</span>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        <input type="checkbox" class="filled-in toggle-plane" id="yz-plane" checked/>
+                        <span>YZ Plane</span>
+                    </label>
+                </div>
+                <div>
+                    <div class="input-field">
+                        <input id="grid-scale" type="text">
+                        <label for="grid-scale">Grid Scale (default is 2)</label>
+                    </div>
+                </div>
+                
+            </div>
+
             <div class="input-field row dropdown-wrapper">
                 <select id="color-by-dropdown" class="">
                     <option value="no_color" selected>No Color</option>

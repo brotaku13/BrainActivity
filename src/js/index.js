@@ -4,20 +4,41 @@ var GRAPH_DATA = {
         graph: undefined,
         cy: undefined,
         container: undefined,
-        titlebar: undefined
+        titlebar: undefined,
+        name: 'ocd'
     },
     con: {
         graph: undefined,
         cy: undefined,
         container: undefined,
-        titlebar: undefined
+        titlebar: undefined,
+        name: 'con'
     },
     graphList:[],
     maxValues:{
         orbits:{}
     },
+    grids:{
+        size: undefined,
+        xy: {
+            ocd: undefined,
+            con: undefined
+        },
+        xz: {
+            ocd: undefined,
+            con: undefined
+        },
+        yz: {
+            ocd: undefined,
+            con: undefined
+        }
+    },
+    axis: {
+        ocd: undefined,
+        con: undefined
+    },
     nodeSize: 1,
-    edgeSize: 1,
+    edgeSize: .1,
     particles: false,
     edgeWeightToggled: false,
     orbitColoring: null,
@@ -49,8 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     //check browser type
-    browserAlert();
-    showTutorial();
+    // browserAlert();
+    // showTutorial();
 
 
     //grab the title bars for each graph to be revealed later
@@ -105,9 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 
     document.getElementById('edge-size').addEventListener('change', (event) => {
-        GRAPH_DATA.edgeSize = event.target.value;
+        GRAPH_DATA.edgeSize = event.target.value * .1;
         updateGraph(GRAPH_DATA.graphList);
     })
+
 
     document.getElementById('node-size').addEventListener('change', (event) => {
         GRAPH_DATA.nodeSize = event.target.value;
@@ -118,6 +140,27 @@ document.addEventListener("DOMContentLoaded", function () {
         let orbitId = document.getElementById('orbit-number').value;
         colorByOribtControl(Number(orbitId), GRAPH_DATA.graphList, GRAPH_DATA.maxValues);
     })
+
+    let gridToggles = document.getElementsByClassName('toggle-plane')
+    for(let i = 0; i < gridToggles.length; i++){
+        gridToggles[i].addEventListener('change', (event)=>{
+        
+            debugger;
+            switch(event.target.id){
+                case 'xz-plane':
+                    togglePlaneVisibility(GRAPH_DATA.grids.xz);
+                    break;
+                case 'xy-plane':
+                    togglePlaneVisibility(GRAPH_DATA.grids.xy);
+                    break;
+                case 'yz-plane':
+                    togglePlaneVisibility(GRAPH_DATA.grids.yz);
+                    break;
+                default:
+                    break;
+            }
+        })
+    }
 
     document.addEventListener('keydown', function(event){
         let code = event.keyCode;
@@ -137,12 +180,20 @@ document.addEventListener("DOMContentLoaded", function () {
         
     } );
 
+    document.getElementById('grid-scale').addEventListener('keyup', event =>{
+        if(event.keyCode === 13){
+            let newScale = document.getElementById('grid-scale').value;
+            newScale = Number(newScale)
+            changeGridScale(newScale);
+        }
+    })
+
     document.getElementById('orbit-modal-text').addEventListener('keyup', event =>{
         if(event.keyCode === 13){
             //run color by code
             var elems = document.getElementById('orbit-modal');
             var modal = M.Modal.getInstance(elems);
-            debugger;
+
             let orbitId = document.getElementById('orbit-modal-text').value;
             colorByOribtControl(Number(orbitId), GRAPH_DATA.graphList, GRAPH_DATA.maxValues);
             modal.close();
@@ -228,4 +279,10 @@ function browser() {
         isEdge ? 'Edge' :
         isBlink ? 'Blink' :
         "Don't know";
+}
+
+function togglePlaneVisibility(plane){
+    let state = plane.ocd.visible;
+    plane.ocd.visible = !state;
+    plane.con.visible = !state;
 }

@@ -36,7 +36,6 @@ function createGraph(graphName, container){
         let dim = GRAPH_DATA[graphName].container.getBoundingClientRect();
 
         //create the 3D-Graph Object and resize it to fit container
-        
         let graph = ForceGraph3D();
         graph(container).width(dim.width).height(dim.height);
         GRAPH_DATA[graphName].graph = graph
@@ -44,6 +43,9 @@ function createGraph(graphName, container){
         //add in elements and build features
         let elements = createGraphElements(GRAPH_DATA[graphName]);
         buildGraph(GRAPH_DATA[graphName].graph, GRAPH_DATA[graphName].cy, elements, GRAPH_DATA.graphList)
+
+        addGrids(elements, 2, graph, graphName)
+        // removeGrids(graph);
 
         //add graph to graphList
         GRAPH_DATA.graphList.push({graph: GRAPH_DATA[graphName].graph, cy: GRAPH_DATA[graphName].cy});
@@ -113,7 +115,7 @@ function buildGraph(graph, cy, graph_elements, graphList){
     })
     .nodeLabel((node)=>{
         //node label is a composite of all of the calculations that have been made on the node
-        let name = `<div>${node.name}</div>`;
+        let name = `<div>${node.name}</div> <div>(${node.fx}, ${node.fy}, ${node.fz})</div>`;
         if(node.degree !== undefined){
             name += `<div>degree: ${node.degree}</div>`;
         }
@@ -175,6 +177,7 @@ function buildGraph(graph, cy, graph_elements, graphList){
         return config.scale.particles * GRAPH_DATA.edgeSize;
     })
     .linkDirectionalParticleResolution(config.particleResolution)
+
     .linkWidth( edge =>{
         if(GRAPH_DATA.edgeWeightToggled && edge.selected){
             return edge.value * GRAPH_DATA.edgeSize;
@@ -242,4 +245,81 @@ function linkToCytoscape(cy, graph){
         GRAPH_DATA.nodeListgenerated = true;
         generateNodeList(cy);
     }
+}
+
+function addGrids(elements, scale, graph, graphName){
+    if(!GRAPH_DATA.grids.size){
+        GRAPH_DATA.grids.size = maxCoordinates(elements)
+    }
+    size = GRAPH_DATA.grids.size;
+
+    let increments = size / scale;
+
+    let XZgrid = createGrid(size, increments, 'xz') // default on XZ axis
+    let XYgrid = createGrid(size, increments, 'xy')
+    let YZgrid = createGrid(size, increments, 'yz')
+    
+    GRAPH_DATA.grids.xz[graphName] = XZgrid;
+    GRAPH_DATA.grids.xy[graphName] = XYgrid;
+    GRAPH_DATA.grids.yz[graphName] = YZgrid;
+
+
+    var axesHelper = new THREE.AxesHelper(size);
+    GRAPH_DATA.axis[graphName] = axesHelper;
+
+    graph.scene().add(XZgrid);
+    graph.scene().add(XYgrid);
+    graph.scene().add(YZgrid);
+
+    graph.scene().add(axesHelper)
+}
+
+function removeGrids(graph, graphName){
+    [GRAPH_DATA.grids.xy, GRAPH_DATA.grids.xz, GRAPH_DATA.grids.yz].forEach(gridset =>{
+        gridset[graphName].geometry.dispose();
+        gridset[graphName].material.dispose();
+        
+        graph.scene().remove(gridset[graphName])
+        gridset[graphName] = undefined;
+    })
+}
+
+function createGrid(size, increments, plane){
+
+    //create grid elements
+    let grid = new THREE.GridHelper(size, increments);
+
+    switch(plane){
+        case 'xz':
+            break;
+        case 'xy':
+            grid.rotateX(Math.PI / 2);
+            break;
+        case 'yz':
+            grid.rotateZ(Math.PI / 2);
+            break;
+        default:
+            break;
+    }
+    
+    return grid;
+}
+
+function maxCoordinates(elements){
+    let maxX = 0;
+    let maxY = 0;
+    let maxZ = 0;
+    let numNodes = elements.nodes.length
+
+    for(let i = 0; i < numNodes; i++){
+        let x = Math.abs(elements.nodes[i].fx);
+        let y = Math.abs(elements.nodes[i].fy);
+        let z = Math.abs(elements.nodes[i].fz);
+
+        maxX = Math.max(maxX, x)
+        maxY = Math.max(maxY, y)
+        maxZ = Math.max(maxZ, z)
+    }
+
+    return Math.max(maxX, maxY, maxZ) * 2 // multiply by two because the coordinats are only the "radius" of the grid
 }
